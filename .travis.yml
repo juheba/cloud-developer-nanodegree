@@ -1,0 +1,25 @@
+language: node_js
+
+node_js:
+  - 13
+
+services:
+  - docker
+
+# Pre-testing installs
+install:
+  - echo "nothing needs to be installed"
+
+# Scripts to be run such as tests
+before_script:
+  - echo "no tests"
+  - echo "Using Docker Hub repository:" "$DOCKER_HUB_NAMESPACE"/"$DOCKER_HUB_REPOSITORY_NAME"
+
+script:
+  - docker --version # print the version for logging
+  - docker build -t "$DOCKER_HUB_REPOSITORY_NAME" .
+  - docker tag "$DOCKER_HUB_REPOSITORY_NAME" "$DOCKER_HUB_NAMESPACE"/"$DOCKER_HUB_REPOSITORY_NAME":latest
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push "$DOCKER_HUB_NAMESPACE"/"$DOCKER_HUB_REPOSITORY_NAME"
