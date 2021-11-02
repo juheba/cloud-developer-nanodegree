@@ -17,7 +17,7 @@ before_script:
 
 script:
   - docker --version # print the version for logging
-  - docker build -t "$DOCKER_HUB_REPOSITORY_NAME" .
+  - docker build -t "$DOCKER_HUB_REPOSITORY_NAME" --build-arg GREETER=${GREETER} .
   - docker tag "$DOCKER_HUB_REPOSITORY_NAME" "$DOCKER_HUB_NAMESPACE"/"$DOCKER_HUB_REPOSITORY_NAME":latest
 
 after_success:
