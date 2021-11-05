@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-2
+  name: simple-express
   labels:
-    app: my-app-2
+    app: simple-express
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: my-app-2
+      app: simple-express
   template:
     metadata:
       labels:
-        app: my-app-2
+        app: simple-express
     spec:
       containers:
       - name: simple-express
-        image: YOUR-DOCKER-ID/simple-express
+        image: juheba/simple-express
         ports:
         - containerPort: 8080
         livenessProbe:
