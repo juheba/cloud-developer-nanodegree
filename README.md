@@ -61,8 +61,17 @@ http://localhost:8080/api/v0/feed to verify that udagram-api-feed is responding 
     cat <qualified-filename>
     ```
 
-## 👷🏽‍♂️ CI
+## CI settings
 Travis job needs environment vars:
+* `POSTGRES_USERNAME` postgres db user
+* `POSTGRES_PASSWORD` postgres db user password
+* `POSTGRES_HOST` aws rds postgres host endpoint
+* `POSTGRES_DB` postgres db name (e.g. postgres)
+* `AWS_BUCKET` s3 bucket name
+* `AWS_REGION` aws region
+* `AWS_PROFILE` aws profile (e.g. default)
+* `JWT_SECRET` custom secret
+* `URL` service entry url
 * `DOCKER_HUB_NAMESPACE`
 * `DOCKER_USERNAME` neccessary for push to docker hub
 * `DOCKER_PASSWORD` neccessary for push to docker hub
