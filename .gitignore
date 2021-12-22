@@ -1,1 +1,7 @@
-set_env.sh
+# k8s envs & secrets
+k8s/aws-secret.yaml
+k8s/env-configmap.yaml
+k8s/env-secret.yaml
+
+# sensitive local envs
+script/set_env.sh

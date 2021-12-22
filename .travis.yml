@@ -13,7 +13,6 @@ install:
 before_script:
   - echo "no tests"
   - echo "Using Docker Hub namespace:" "$DOCKER_HUB_NAMESPACE"
-  - echo "Using service entry url" "$URL"
 
 script:
   - docker --version # print the version for logging

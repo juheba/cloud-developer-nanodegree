@@ -1,27 +1,28 @@
 # Overview
 
-## Create images
+## Local
+### Create images
 ```bash
 docker image prune --all  # Remove unused and dangling images
 docker-compose -f docker-compose-build.yaml build --parallel  # Create images locally
 ```
 
-## Run containers
+### Run containers
 ```bash
 docker-compose up  # Start the application
 ```
 
-## Stop containers & delete images
+### Stop containers & delete images
 ```bash
 docker-compose down
 docker image prune --all  # Remove unused and dangling images
 ```
 
-## Verify
+### Verify
 Visit http://localhost:8100 in your web browser to verify that the application is running.
 http://localhost:8080/api/v0/feed to verify that udagram-api-feed is responding successfully.
 
-### Troubleshoot
+#### Troubleshoot
 1. Make sure that the environment variables are set correctly in your terminal.
     Set the environment variables permanently in `~/.profile` file:
     ```bash
@@ -63,15 +64,9 @@ http://localhost:8080/api/v0/feed to verify that udagram-api-feed is responding 
 
 ## CI settings
 Travis job needs environment vars:
-* `POSTGRES_USERNAME` postgres db user
-* `POSTGRES_PASSWORD` postgres db user password
-* `POSTGRES_HOST` aws rds postgres host endpoint
-* `POSTGRES_DB` postgres db name (e.g. postgres)
-* `AWS_BUCKET` s3 bucket name
-* `AWS_REGION` aws region
-* `AWS_PROFILE` aws profile (e.g. default)
-* `JWT_SECRET` custom secret
-* `URL` service entry url
 * `DOCKER_HUB_NAMESPACE`
 * `DOCKER_USERNAME` neccessary for push to docker hub
 * `DOCKER_PASSWORD` neccessary for push to docker hub
+
+## CD apply environment vars, secrets & deployment
+Connect with `kubectl` to the EKSCluster and run the script `script/kubectl_deploy.sh` to apply all environment vars, secrets, deployment and service yaml files.
