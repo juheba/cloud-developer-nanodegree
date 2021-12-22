@@ -11,6 +11,9 @@ docker-compose -f docker-compose-build.yaml build --parallel  # Create images lo
 ```bash
 docker-compose up  # Start the application
 ```
+### Verify
+Visit http://localhost:8100 in your web browser to verify that the application is running.
+http://localhost:8080/api/v0/feed to verify that udagram-api-feed is responding successfully.
 
 ### Stop containers & delete images
 ```bash
@@ -18,9 +21,6 @@ docker-compose down
 docker image prune --all  # Remove unused and dangling images
 ```
 
-### Verify
-Visit http://localhost:8100 in your web browser to verify that the application is running.
-http://localhost:8080/api/v0/feed to verify that udagram-api-feed is responding successfully.
 
 #### Troubleshoot
 1. Make sure that the environment variables are set correctly in your terminal.
@@ -70,3 +70,25 @@ Travis job needs environment vars:
 
 ## CD apply environment vars, secrets & deployment
 Connect with `kubectl` to the EKSCluster and run the script `script/kubectl_deploy.sh` to apply all environment vars, secrets, deployment and service yaml files.
+
+## Troubleshooting
+```bash
+kubectl logs <pod-name>
+kubectl exec -it <pod-name> bash
+```
+
+## Expose public IPs
+```bash
+kubectl expose deployment reverseproxy --type=LoadBalancer --name=publicfrontend
+kubectl expose deployment udagram-frontend --type=LoadBalancer --name=publicfrontend
+```
+
+## Verify
+```bash
+kubectl get secret
+kubectl get configmap
+kubectl get deployment
+kubectl get service
+kubectl get pod
+kubectl get hpa
+```
