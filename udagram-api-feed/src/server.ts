@@ -41,6 +41,11 @@ import {V0_FEED_MODELS} from './controllers/v0/model.index';
     res.send( '/api/v0/' );
   } );
 
+  // Health check
+  app.get( '/health', async ( req, res ) => {
+    res.status(200).send("feed is fine");
+  } );
+
 
   // Start the Server
   app.listen( port, () => {
