@@ -1,0 +1,174 @@
+Name:                   reverseproxy
+Namespace:              default
+CreationTimestamp:      Thu, 23 Dec 2021 11:09:25 +0100
+Labels:                 service=reverseproxy
+Annotations:            deployment.kubernetes.io/revision: 3
+Selector:               service=reverseproxy
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  service=reverseproxy
+  Containers:
+   reverseproxy:
+    Image:        juheba/reverseproxy
+    Port:         8080/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   reverseproxy-5cc869c9f (1/1 replicas created)
+Events:          <none>
+
+
+Name:                   udagram-api-feed
+Namespace:              default
+CreationTimestamp:      Thu, 23 Dec 2021 11:09:21 +0100
+Labels:                 app=udagram-api-feed
+Annotations:            deployment.kubernetes.io/revision: 9
+Selector:               app=udagram-api-feed
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=udagram-api-feed
+  Containers:
+   udagram-api-feed:
+    Image:      juheba/udagram-api-feed
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     500m
+      memory:  2Gi
+    Requests:
+      cpu:     250m
+      memory:  64Mi
+    Liveness:  http-get http://:8080/health delay=20s timeout=1s period=300s #success=1 #failure=3
+    Environment:
+      URL:                <set to the key 'URL' of config map 'env-configmap'>            Optional: false
+      AWS_BUCKET:         <set to the key 'AWS_BUCKET' of config map 'env-configmap'>     Optional: false
+      AWS_PROFILE:        <set to the key 'AWS_PROFILE' of config map 'env-configmap'>    Optional: false
+      AWS_REGION:         <set to the key 'AWS_REGION' of config map 'env-configmap'>     Optional: false
+      JWT_SECRET:         <set to the key 'JWT_SECRET' of config map 'env-configmap'>     Optional: false
+      POSTGRES_DB:        <set to the key 'POSTGRES_DB' of config map 'env-configmap'>    Optional: false
+      POSTGRES_HOST:      <set to the key 'POSTGRES_HOST' of config map 'env-configmap'>  Optional: false
+      POSTGRES_USERNAME:  <set to the key 'POSTGRES_USERNAME' in secret 'env-secret'>     Optional: false
+      POSTGRES_PASSWORD:  <set to the key 'POSTGRES_PASSWORD' in secret 'env-secret'>     Optional: false
+    Mounts:
+      /root/.aws/ from aws-secret (ro)
+  Volumes:
+   aws-secret:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  aws-secret
+    Optional:    false
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   udagram-api-feed-59957dddc8 (1/1 replicas created)
+Events:
+  Type    Reason             Age                From                   Message
+  ----    ------             ----               ----                   -------
+  Normal  ScalingReplicaSet  30m (x2 over 31m)  deployment-controller  Scaled up replica set udagram-api-feed-59957dddc8 to 2
+  Normal  ScalingReplicaSet  30m                deployment-controller  Scaled up replica set udagram-api-feed-59957dddc8 to 3
+  Normal  ScalingReplicaSet  25m                deployment-controller  Scaled down replica set udagram-api-feed-59957dddc8 to 2
+  Normal  ScalingReplicaSet  19m (x3 over 48m)  deployment-controller  Scaled down replica set udagram-api-feed-59957dddc8 to 1
+
+
+Name:                   udagram-api-user
+Namespace:              default
+CreationTimestamp:      Thu, 23 Dec 2021 11:09:23 +0100
+Labels:                 app=udagram-api-user
+Annotations:            deployment.kubernetes.io/revision: 2
+Selector:               app=udagram-api-user
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=udagram-api-user
+  Containers:
+   udagram-api-user:
+    Image:      juheba/udagram-api-user
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     500m
+      memory:  2Gi
+    Requests:
+      cpu:     250m
+      memory:  64Mi
+    Liveness:  http-get http://:8080/health delay=20s timeout=1s period=300s #success=1 #failure=3
+    Environment:
+      URL:                <set to the key 'URL' of config map 'env-configmap'>            Optional: false
+      AWS_BUCKET:         <set to the key 'AWS_BUCKET' of config map 'env-configmap'>     Optional: false
+      AWS_PROFILE:        <set to the key 'AWS_PROFILE' of config map 'env-configmap'>    Optional: false
+      AWS_REGION:         <set to the key 'AWS_REGION' of config map 'env-configmap'>     Optional: false
+      JWT_SECRET:         <set to the key 'JWT_SECRET' of config map 'env-configmap'>     Optional: false
+      POSTGRES_DB:        <set to the key 'POSTGRES_DB' of config map 'env-configmap'>    Optional: false
+      POSTGRES_HOST:      <set to the key 'POSTGRES_HOST' of config map 'env-configmap'>  Optional: false
+      POSTGRES_USERNAME:  <set to the key 'POSTGRES_USERNAME' in secret 'env-secret'>     Optional: false
+      POSTGRES_PASSWORD:  <set to the key 'POSTGRES_PASSWORD' in secret 'env-secret'>     Optional: false
+    Mounts:
+      /root/.aws/ from aws-secret (ro)
+  Volumes:
+   aws-secret:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  aws-secret
+    Optional:    false
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   udagram-api-user-5b49cf76d7 (1/1 replicas created)
+Events:
+  Type    Reason             Age                From                   Message
+  ----    ------             ----               ----                   -------
+  Normal  ScalingReplicaSet  43m                deployment-controller  Scaled up replica set udagram-api-user-5b49cf76d7 to 1
+  Normal  ScalingReplicaSet  43m                deployment-controller  Scaled down replica set udagram-api-user-77464b6f96 to 1
+  Normal  ScalingReplicaSet  43m                deployment-controller  Scaled up replica set udagram-api-user-5b49cf76d7 to 2
+  Normal  ScalingReplicaSet  43m                deployment-controller  Scaled down replica set udagram-api-user-77464b6f96 to 0
+  Normal  ScalingReplicaSet  36m (x2 over 42m)  deployment-controller  Scaled up replica set udagram-api-user-5b49cf76d7 to 3
+  Normal  ScalingReplicaSet  32m (x2 over 36m)  deployment-controller  Scaled down replica set udagram-api-user-5b49cf76d7 to 1
+
+
+Name:                   udagram-frontend
+Namespace:              default
+CreationTimestamp:      Thu, 23 Dec 2021 11:57:15 +0100
+Labels:                 app=udagram-frontend
+Annotations:            deployment.kubernetes.io/revision: 3
+Selector:               app=udagram-frontend
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=udagram-frontend
+  Containers:
+   udagram-frontend:
+    Image:        juheba/udagram-frontend
+    Port:         80/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   udagram-frontend-8577dbc9cf (1/1 replicas created)
+Events:          <none>

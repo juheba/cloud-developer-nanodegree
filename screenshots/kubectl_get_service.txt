@@ -1,0 +1,8 @@
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP                                                                  PORT(S)          AGE
+kubernetes             ClusterIP      10.100.0.1       <none>                                                                       443/TCP          8h
+publicfrontend         LoadBalancer   10.100.2.100     a3203b11654b443109714319f25a505f-1223932407.eu-central-1.elb.amazonaws.com   80:31255/TCP     5h30m
+publicreverseproxy     LoadBalancer   10.100.190.56    ab5ce24e5197f40f9ab554e9dbc9f685-1714614390.eu-central-1.elb.amazonaws.com   8080:30632/TCP   8h
+reverseproxy-svc       ClusterIP      10.100.105.63    <none>                                                                       8080/TCP         8h
+udagram-api-feed-svc   ClusterIP      10.100.32.204    <none>                                                                       8080/TCP         8h
+udagram-api-user-svc   ClusterIP      10.100.224.216   <none>                                                                       8080/TCP         8h
+udagram-frontend-svc   ClusterIP      10.100.160.81    <none>                                                                       8100/TCP         7h16m
