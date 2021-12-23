@@ -17,6 +17,21 @@ import {V0_USER_MODELS} from './controllers/v0/model.index';
   const app = express();
   const port = process.env.PORT || 8080;
 
+  app.use(function(req, res, next) {
+    const logObj = {
+      time: new Date().toUTCString(),
+      requestId: req.headers['x-request-id'],
+      fromIP: req.headers['x-forwarded-for'],
+      method: req.method,
+      originalUrl: req.originalUrl,
+      url: req.url,
+      requestData: req.body || '',
+      referer: req.headers.referer || ''
+    };
+    console.log(JSON.stringify(logObj));
+    next();
+  });
+
   app.use(bodyParser.json());
 
   // We set the CORS origin to * so that we don't need to
@@ -32,6 +47,26 @@ import {V0_USER_MODELS} from './controllers/v0/model.index';
     preflightContinue: true,
     origin: '*',
   }));
+
+  app.use(function (req,res,next) {
+    next();
+    let oldSend = res.send;
+    res.send = function(data) {
+      const logObj = {
+        time: new Date().toUTCString(),
+        requestId: req.headers['x-request-id'],
+        fromIP: req.headers['x-forwarded-for'],
+        method: req.method,
+        originalUrl: req.originalUrl,
+        statusCode: res.statusCode,
+        responseData: data || '',
+        referer: req.headers.referer || ''
+      };
+      console.log(JSON.stringify(logObj));
+      res.send = oldSend;
+      return res.send(data);
+    }
+   });
 
   app.use('/api/v0/', IndexRouter);
 
