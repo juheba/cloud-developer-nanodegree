@@ -16,6 +16,9 @@ kubectl apply -f udagram-reverseproxy/deploy/service.yaml
 # Expose public IPs
 kubectl expose deployment reverseproxy --type=LoadBalancer --name=publicreverseproxy
 
+# Set up Kubernetes Metrics Server (for autoscaler to fetch resource metrics)
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
 # Horizontal Pod Autoscaler
-kubectl autoscale deployment udagram-api-feed --cpu-percent=50 --min=1 --max=3
-kubectl autoscale deployment udagram-api-user --cpu-percent=50 --min=1 --max=3
+kubectl autoscale deployment udagram-api-feed --cpu-percent=50 --min=1 --max=2
+kubectl autoscale deployment udagram-api-user --cpu-percent=50 --min=1 --max=2
