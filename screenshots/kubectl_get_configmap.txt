@@ -1,3 +1,0 @@
-NAME               DATA   AGE
-env-configmap      7      8h
-kube-root-ca.crt   1      8h
