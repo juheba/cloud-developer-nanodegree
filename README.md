@@ -23,44 +23,41 @@ docker image prune --all  # Remove unused and dangling images
 
 
 #### Troubleshoot
-1. Make sure that the environment variables are set correctly in your terminal.
-    Set the environment variables permanently in `~/.profile` file:
-    ```bash
-    export POSTGRES_USERNAME=
-    export POSTGRES_PASSWORD=
-    export POSTGRES_HOST=
-    export POSTGRES_DB=
-    export AWS_BUCKET=<BUCKET_NAME_NOT_ARN>
-    export AWS_REGION=
-    export AWS_PROFILE=default
-    export JWT_SECRET=
-    export URL=http://localhost:8080
-    ```
+Make sure that the environment variables are set correctly in your terminal.
+```bash
+Set the environment variables permanently in `~/.profile` file:
+export POSTGRES_USERNAME=
+export POSTGRES_PASSWORD=
+export POSTGRES_HOST=
+export POSTGRES_DB=
+export AWS_BUCKET=<BUCKET_NAME_NOT_ARN>
+export AWS_REGION=
+export AWS_PROFILE=default
+export JWT_SECRET=
+export URL=http://localhost:8080
+```
 
-    Use the above defined environment vars in your terminal:
-    ```bash
-    source ~/.profile
-    ```
-2. Ensure that the environment variables are read correctly while running the containers.
-    ```bash
-    docker-compose config
-    ```
-3. Rebuilding the images, you must delete the existing images locally, using:
-    ```bash
-    # Run from the directory where you have the compose file present
-    docker-compose down
-    # To delete all dangling images
-    docker image prune --all
-    ```
-4. When you edit your code and build images multiple times, it is recommended to change the tag (say, v2, v3, v4, ....) in docker-compose.yaml and docker-compose-build.yaml files. It will help the `build` command to avoid using the dangling images. To ensure that your edits have been containerized, you can open a bash shell into the containers, and check the specific file, as:
-    ```bash
-    # See the list of running containers
-    docker ps
-    # Open bash into a particular container
-    docker exec -it <container-id> bash
-    # Navigate to the specific file to ensure that your edits are there. 
-    cat <qualified-filename>
-    ```
+Use the above defined environment vars in your terminal:
+```bash
+source ~/.profile
+```
+
+```bash
+# Ensure that the environment variables are read correctly while running the containers.
+docker-compose config
+
+# Rebuilding the images, you must delete the existing images locally, using:
+# Run from the directory where you have the compose file present
+docker-compose down
+# To delete all dangling images
+docker image prune --all
+
+# See the list of running containers
+docker ps
+
+# Open bash into a particular container
+docker exec -it <container-id> bash
+```
 
 ## CI settings
 Travis job needs environment vars:
@@ -79,8 +76,27 @@ kubectl exec -it <pod-name> bash
 
 ## Expose public IPs
 ```bash
-kubectl expose deployment reverseproxy --type=LoadBalancer --name=publicfrontend
+kubectl expose deployment reverseproxy --type=LoadBalancer --name=publicreverseproxy
 kubectl expose deployment udagram-frontend --type=LoadBalancer --name=publicfrontend
+kubectl get services  # check created publicfrontend & publicreverseproxy
+
+# Verify reverseproxy loadbalancer
+curl http://<publicreverseproxy EXTERNAL-IP>:8080/api/v0/feed
+```
+
+## Deploy UI
+Update `udagram-frontend/src/environments/environment.ts` & `udagram-frontend/src/environments/environment.prod.ts`:
+Replace the keyword `localhost` in the `http://localhost:8080/api/v0` string with the External-IP of the reverseproxy deployment.
+```bash
+# Build & push UI image:
+docker build . -t juheba/udagram-frontend:latest
+docker push juheba/udagram-frontend:latest
+# Update deployment:
+kubectl set image deployment udagram-frontend udagram-frontend=juheba/udagram-frontend:latest
+
+# Troubleshoot external-ip
+kubectl exec -it $(kubectl get pods -l app=udagram-frontend --output jsonpath='{.items[0].metadata.name}') sh
+cat usr/share/nginx/html/main.js | grep 'apiHost:'
 ```
 
 ## Verify
@@ -91,4 +107,9 @@ kubectl get deployment
 kubectl get service
 kubectl get pod
 kubectl get hpa
+
+kubectl logs $(kubectl get pods -l app=udagram-api-feed --output jsonpath='{.items[0].metadata.name}')
+kubectl logs $(kubectl get pods -l app=udagram-api-user --output jsonpath='{.items[0].metadata.name}')
+kubectl logs $(kubectl get pods -l service=reverseproxy --output jsonpath='{.items[0].metadata.name}')
+kubectl logs $(kubectl get pods -l app=udagram-frontend --output jsonpath='{.items[0].metadata.name}')
 ```
