@@ -1,13 +1,13 @@
 # Get External-IP of the reverseproxy deployment.
-EXTERNAL_ID=$(kubectl get service publicreverseproxy --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+EXTERNAL_IP=$(kubectl get service publicreverseproxy --output jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 
 ENVTSFILE=udagram-frontend/src/environments/environment.ts
 ENVPRODTSFILE=udagram-frontend/src/environments/environment.prod.ts
 
 # Update `udagram-frontend/src/environments/environment.ts` & `udagram-frontend/src/environments/environment.prod.ts`
 # Replace the keyword `localhost` with the External-IP of the reverseproxy deployment.
-sed -i "s/localhost/$EXTERNAL_ID/" $ENVTSFILE
-sed -i "s/localhost/$EXTERNAL_ID/" $ENVPRODTSFILE
+sed -i "s/localhost/$EXTERNAL_IP/" $ENVTSFILE
+sed -i "s/localhost/$EXTERNAL_IP/" $ENVPRODTSFILE
 
 echo 'updated external ip'$(cat $ENVTSFILE | grep 'apiHost:')
 

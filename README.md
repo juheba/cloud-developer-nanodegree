@@ -1,6 +1,6 @@
 # Overview
 
-## Local
+## Local setup with docker compose
 ### Create images
 ```bash
 docker image prune --all  # Remove unused and dangling images
@@ -25,7 +25,7 @@ docker image prune --all  # Remove unused and dangling images
 #### Troubleshoot
 Make sure that the environment variables are set correctly in your terminal.
 ```bash
-Set the environment variables permanently in `~/.profile` file:
+# Set the environment variables permanently in `~/.profile` file:
 export POSTGRES_USERNAME=
 export POSTGRES_PASSWORD=
 export POSTGRES_HOST=
@@ -59,14 +59,19 @@ docker ps
 docker exec -it <container-id> bash
 ```
 
+---
+
 ## CI settings
 Travis job needs environment vars:
 * `DOCKER_HUB_NAMESPACE`
 * `DOCKER_USERNAME` neccessary for push to docker hub
 * `DOCKER_PASSWORD` neccessary for push to docker hub
 
+---
+
 ## CD apply environment vars, secrets & deployment
-Connect with `kubectl` to the EKSCluster and run the script `script/kubectl_deploy.sh` to apply all environment vars, secrets, deployment and service yaml files.
+1. Connect with `kubectl` to the EKSCluster by running script `scripts/1_kubectl_setup.sh`.
+ 2. Then run the script `scripts/2_kubectl_deploy_backend.sh` to apply all environment vars and secrets yaml and only the backend deployment and service yaml files.
 
 ## Troubleshooting
 ```bash
@@ -74,7 +79,7 @@ kubectl logs <pod-name>
 kubectl exec -it <pod-name> bash
 ```
 
-## Expose public IPs
+## Expose public IPs (already created by 2_kubectl_deploy_backend.sh)
 ```bash
 kubectl expose deployment reverseproxy --type=LoadBalancer --name=publicreverseproxy
 kubectl expose deployment udagram-frontend --type=LoadBalancer --name=publicfrontend
@@ -85,6 +90,8 @@ curl http://<publicreverseproxy EXTERNAL-IP>:8080/api/v0/feed
 ```
 
 ## Deploy UI
+Run the script `scripts/3_kubectl_deploy_frontend.sh` to apply the frontend deployment and service yaml files.
+
 Update `udagram-frontend/src/environments/environment.ts` & `udagram-frontend/src/environments/environment.prod.ts`:
 Replace the keyword `localhost` in the `http://localhost:8080/api/v0` string with the External-IP of the reverseproxy deployment.
 ```bash
