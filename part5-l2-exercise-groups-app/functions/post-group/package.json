@@ -1,0 +1,21 @@
+{
+    "name": "post-group",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "package": "zip -r post-group.zip .",
+        "prod": "npm i --production && npm run package",
+        "ship-it": "aws lambda update-function-code --function-name post-group --zip-file fileb://post-group.zip",
+        "clean": "rm post-group.zip",
+        "fresh-start": "rm -I -d -r node_modules package-lock.json post-group.zip",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "aws-sdk": "^2.492.0"
+    }
+}
