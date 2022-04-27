@@ -1,13 +1,23 @@
 # Cloud Developer Nanodegree - Part 5
 
-Demo & exercise code.
-
-Lesson 1
-* [`Demo - Chaos monkey`](./part5-l1-chaos-monkey/)
-* [`Exercise - Http metrics`](./part5-l1-exercise-http-metrics/)
-
-Lesson 2
-* [`Exercise - Groups App`](./part5-l2-exercise-groups-app/)
-
-Lesson 3
-* [`Exercise - Serverless Template Udagram App`](./part5-l2-exercise-groups-app/)
+<table>
+  <tr>
+    <td><b>Lesson 1</b></td>
+    <td>
+      <a href="./part5-l1-chaos-monkey/">Demo - Chaos monkey</a></br>
+      <a href="./part5-l1-exercise-http-metrics/">Exercise - Http metrics</a>
+    </td>
+  </tr>
+  <tr>
+    <td><b>Lesson 2</b></td>
+    <td><a href="./part5-l2-exercise-groups-app/">Exercise - Groups App</a></td>
+  </tr>
+  <tr>
+    <td><b>Lesson 3</b></td>
+    <td><a href="./part5-l3-exercise-serverless-template/">Exercise - Serverless Template Udagram App</a></td>
+  </tr>
+  <tr>
+    <td><b>Lesson 4</b></td>
+    <td><a href="./part5-l4-demo-s3/">Demo - ???</a></td>
+  </tr>
+</table>
