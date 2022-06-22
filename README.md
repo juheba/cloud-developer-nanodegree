@@ -14,10 +14,10 @@
   </tr>
   <tr>
     <td><b>Lesson 3</b></td>
-    <td><a href="./part5-l3-exercise-serverless-template/">Exercise - Serverless Template Udagram App</a></td>
+    <td><a href="./part5-l3-exercise-serverless-template/udagram-app">Exercise - Serverless Template Udagram App</a></td>
   </tr>
   <tr>
     <td><b>Lesson 4</b></td>
-    <td><a href="./part5-l4-demo-s3/">Demo - ???</a></td>
+    <td><a href="./part5-l4-demo-s3/">Demo - Event Processing ???</a></td>
   </tr>
 </table>

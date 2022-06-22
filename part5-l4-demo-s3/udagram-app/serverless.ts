@@ -5,6 +5,9 @@ import postGroup from '@functions/post-group';
 import getImages from '@functions/get-images';
 import getImage from '@functions/get-image';
 import postImage from '@functions/post-image';
+import sendNotification from "@functions/s3/sendNotification";
+import connectHandler from "@functions/websocket/connectHandler";
+import disconnectHandler from "@functions/websocket/disconnectHandler";
 
 const serverlessConfiguration: AWS = {
   service: 'udagram-app',
@@ -20,9 +23,12 @@ const serverlessConfiguration: AWS = {
       shouldStartNameWithService: true,
     },
     environment: {
+      REGION: '${self:provider.region}',
+      STAGE: '${self:provider.stage}',
       GROUPS_TABLE: 'groups-${self:provider.stage}',
       IMAGES_TABLE: 'images-${self:provider.stage}',
       IMAGE_ID_INDEX: 'ImageIdIndex',
+      CONNECTIONS_TABLE: 'connections-${self:provider.stage}',
       IMAGES_S3_BUCKET: 'udagram-images-${self:provider.stage}',
       SIGNED_URL_EXPIRATION: '300',
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
@@ -62,6 +68,15 @@ const serverlessConfiguration: AWS = {
               "s3:PutObject"
             ],
             Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+          },
+          {
+            Effect: "Allow",
+            Action: [
+              "dynamodb:Scan",
+              "dynamodb:PutItem",
+              "dynamodb:DeleteItem"
+            ],
+            Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CONNECTIONS_TABLE}'
           }
         ]
       }
@@ -133,6 +148,15 @@ const serverlessConfiguration: AWS = {
         Type: 'AWS::S3::Bucket',
         Properties: {
           BucketName: '${self:provider.environment.IMAGES_S3_BUCKET}',
+          NotificationConfiguration: {
+            LambdaConfigurations: [
+              {
+                Event: 's3:ObjectCreated:*',
+                // In this file the resource is called 'SendNotification' but CloudFOrmation adds a 'LambdaFunction'-suffix to it.
+                Function: { "Fn::GetAtt" : [ "SendNotificationLambdaFunction", "Arn" ] }  // GetAtt function from CloudFormation.
+              }
+            ]
+          },
           CorsConfiguration: {
             CorsRules: [
               {
@@ -161,13 +185,27 @@ const serverlessConfiguration: AWS = {
               }
             ]
           },
-          Bucket: { "Ref" : "ImagesBucket" }
+          Bucket: { "Ref" : "ImagesBucket" }  // Ref function from CloudFormation
+        }
+      },
+      SendNotificationPermission: {
+        Type: 'AWS::Lambda::Permission',
+        Properties: {
+            FunctionName: { 'Fn::GetAtt': ['SendNotificationLambdaFunction','Arn'] },
+            Action: 'lambda:InvokeFunction',
+            Principal: 's3.amazonaws.com',
+            SourceAccount: { 'Ref': 'AWS::AccountId' },
+            SourceArn: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}'
         }
       }
     }
   },
   // import the function via paths
-  functions: { getGroups, postGroup, getImages, getImage, postImage },
+  functions: {
+    getGroups, postGroup, getImages, getImage, postImage,
+    sendNotification,
+    connectHandler, disconnectHandler
+  },
   package: { individually: true },
   custom: {
     esbuild: {
