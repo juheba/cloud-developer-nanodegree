@@ -6,6 +6,7 @@ import getImages from '@functions/get-images';
 import getImage from '@functions/get-image';
 import postImage from '@functions/post-image';
 import sendNotification from "@functions/s3/sendNotification";
+import elasticSearchSync from "@functions/elastic/elasticSearchSync"
 import connectHandler from "@functions/websocket/connectHandler";
 import disconnectHandler from "@functions/websocket/disconnectHandler";
 
@@ -103,6 +104,9 @@ const serverlessConfiguration: AWS = {
         Type: "AWS::DynamoDB::Table",
         Properties: {
           BillingMode: "PAY_PER_REQUEST",
+          StreamSpecification: {
+            StreamViewType: "NEW_IMAGE"
+          },
           TableName: '${self:provider.environment.IMAGES_TABLE}',
           AttributeDefinitions: [
             {
@@ -142,6 +146,21 @@ const serverlessConfiguration: AWS = {
               }
             }
           ]
+        }
+      },
+      ConnectionsTable: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          BillingMode: "PAY_PER_REQUEST",
+          TableName: '${self:provider.environment.CONNECTIONS_TABLE}',
+          AttributeDefinitions: [{
+            AttributeName: "id",
+            AttributeType: "S",
+          }],
+          KeySchema: [{
+            AttributeName: "id",
+            KeyType: "HASH"  // equals to partition key
+          }]
         }
       },
       ImagesBucket: {
@@ -204,6 +223,7 @@ const serverlessConfiguration: AWS = {
   functions: {
     getGroups, postGroup, getImages, getImage, postImage,
     sendNotification,
+    elasticSearchSync,
     connectHandler, disconnectHandler
   },
   package: { individually: true },
