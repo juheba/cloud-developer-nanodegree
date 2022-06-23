@@ -24,7 +24,7 @@ const serverlessConfiguration: AWS = {
       shouldStartNameWithService: true,
     },
     environment: {
-      MY_IP_ADDRESS: // google: what is my ipv4
+      MY_IP_ADDRESS: // https://checkip.amazonaws.com/
       REGION: '${self:provider.region}',
       STAGE: '${self:provider.stage}',
       GROUPS_TABLE: 'groups-${self:provider.stage}',
@@ -241,14 +241,14 @@ const serverlessConfiguration: AWS = {
               {
                 Effect: 'Allow',
                 Principal: '*',
-                Action: 'es:*',
-                /* To get rid of the error:
+                Action: ['es:*','es:ESHttp*','es:ESHttpGet','es:ESHttpPost'],
+                /* To get rid of the serverless deploy (sls deploy) error:
                     > UPDATE_FAILED: ImagesSearch (AWS::Elasticsearch::Domain)
                     > Apply a restrictive access policy to your domain (Service: AWSElasticsearch; Status Code: 400; Error Code: ValidationException; ...)
                   Specifying the resource isn't enough. I had to provide a condition with my ip address aswell. */
                 Resource: { "Fn::Sub": "arn:aws:es:${self:provider.region}:${AWS::AccountId}:domain/images-search-${self:provider.stage}/*" },
                 Condition: {
-                  IpAddress: { 'aws:SourceIp': ['${self:provider.environment.MY_IP_ADDRESS}']}
+                  IpAddress: { 'aws:SourceIp': ['${self:provider.environment.MY_IP_ADDRESS}/32']}
                 }
               }
             ]
