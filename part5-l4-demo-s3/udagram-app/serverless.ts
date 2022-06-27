@@ -6,6 +6,7 @@ import getImages from '@functions/get-images';
 import getImage from '@functions/get-image';
 import postImage from '@functions/post-image';
 import sendNotification from "@functions/sns/sendNotification";
+import resizeImage from "@functions/sns/resizeImage";
 import elasticSearchSync from "@functions/elastic/elasticSearchSync"
 import connectHandler from "@functions/websocket/connectHandler";
 import disconnectHandler from "@functions/websocket/disconnectHandler";
@@ -34,6 +35,7 @@ const serverlessConfiguration: AWS = {
       IMAGE_ID_INDEX: 'ImageIdIndex',
       CONNECTIONS_TABLE: 'connections-${self:provider.stage}',
       IMAGES_S3_BUCKET: 'udagram-images-${self:provider.stage}',
+      THUMBNAILS_S3_BUCKET: 'udagram-thumbnail-${self:provider.stage}',
       SIGNED_URL_EXPIRATION: '300',
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
@@ -72,6 +74,13 @@ const serverlessConfiguration: AWS = {
               "s3:PutObject"
             ],
             Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+          },
+          {
+            Effect: "Allow",
+            Action: [
+              "s3:PutObject"
+            ],
+            Resource: 'arn:aws:s3:::${self:provider.environment.THUMBNAILS_S3_BUCKET}/*'
           },
           {
             Effect: "Allow",
@@ -324,6 +333,7 @@ const serverlessConfiguration: AWS = {
   functions: {
     getGroups, postGroup, getImages, getImage, postImage,
     sendNotification,
+    resizeImage,
     elasticSearchSync,
     connectHandler, disconnectHandler
   },
