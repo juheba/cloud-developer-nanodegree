@@ -3,6 +3,7 @@
 # Backend
 npm i       # classic install
 sls deploy  # deploy serverless template to aws
+MY_IP_ADDRESS=$(curl https://checkip.amazonaws.com/) sls deploy  # deploy with environment variables (in this case MY_IP_ADDRESS to substitute the current ip address)
 sls remove  # remove infrastructure and cloudformation template from aws
 
 # Connecting to the websocket

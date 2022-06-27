@@ -24,9 +24,9 @@ const serverlessConfiguration: AWS = {
       shouldStartNameWithService: true,
     },
     environment: {
-      MY_AWS_ACCESS_KEY_ID: '${env:MY_AWS_ACCESS_KEY_ID}',
-      MY_AWS_SECRET_ACCESS_KEY: '${env:MY_AWS_SECRET_ACCESS_KEY}',
-      MY_IP_ADDRESS: '${env:MY_IP_ADDRESS}',  // https://checkip.amazonaws.com/
+      /*MY_AWS_ACCESS_KEY_ID: '${env:MY_AWS_ACCESS_KEY_ID}',
+      MY_AWS_SECRET_ACCESS_KEY: '${env:MY_AWS_SECRET_ACCESS_KEY}',*/
+      MY_IP_ADDRESS: '${env:MY_IP_ADDRESS}',  // get current ip address and deploy with: MY_IP_ADDRESS=$(curl https://checkip.amazonaws.com/) sls deploy
       REGION: '${self:provider.region}',
       STAGE: '${self:provider.stage}',
       GROUPS_TABLE: 'groups-${self:provider.stage}',
@@ -86,10 +86,7 @@ const serverlessConfiguration: AWS = {
             Effect: "Allow",
             Action: [
               "es:ESHttpGet",
-              "es:ESHttpDelete",
-              "es:ESHttpHead",
               "es:ESHttpPost",
-              "es:ESHttpPatch",
               "es:ESHttpPut"
             ],
             Resource: 'arn:aws:es:${self:provider.region}:*:domain/images-search-${self:provider.stage}/*'

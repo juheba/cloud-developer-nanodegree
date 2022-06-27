@@ -12,15 +12,19 @@ AWS.config.region = process.env.AWS_REGION;
 const es = elasticsearch.Client({
     host: process.env.ES_ENDPOINT,
     connectionClass: awsHttpClient,
-    amazonES: {
+    /*amazonES: {
         region: process.env.AWS_REGION,
         credentials: new AWS.Credentials(process.env.MY_AWS_ACCESS_KEY_ID, process.env.MY_AWS_SECRET_ACCESS_KEY)
-    }
+    }*/
 });
+
+const IMAGE_INDEX_NAME = 'images-index'
+const IMAGE_MAPPING_TYPE = 'images'
 
 export const handler: DynamoDBStreamHandler = async (event: DynamoDBStreamEvent) => {
   console.log('Processing events batch from DynamoDB', JSON.stringify(event))
 
+  // Only for testing purposes - might remove later.
   /*es.ping({
     requestTimeout: 30000,
   }, function (error) {
@@ -49,8 +53,8 @@ export const handler: DynamoDBStreamHandler = async (event: DynamoDBStreamEvent)
     }
 
     await es.index({
-      index: 'images-index',
-      type: 'images',
+      index: IMAGE_INDEX_NAME,
+      type: IMAGE_MAPPING_TYPE,
       id: imageId,
       body
     })
