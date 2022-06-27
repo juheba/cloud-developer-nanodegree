@@ -1,4 +1,4 @@
-import { S3Handler, S3Event } from "aws-lambda";
+import { SNSHandler, SNSEvent, S3Event } from "aws-lambda";
 import * as AWS  from 'aws-sdk'
 import { middyfy } from '@libs/lambda';
 import { deleteConnectionId } from '@functions/websocket/disconnectHandler/handler'
@@ -17,14 +17,23 @@ const connectionParams = {
 
 const apiGateway = new AWS.ApiGatewayManagementApi(connectionParams)
 
-export const handler: S3Handler = async (event: S3Event) => {
-  console.log('Processing event: ', event)
+export const handler: SNSHandler = async (event: SNSEvent) => {
+  console.log('Processing SNS event: ', JSON.stringify(event))
 
-  const connections = await getConnectionIds()
+  for (const record of event.Records) {
+    const s3EventStr = record.Sns.Message
+    console.log('Processing S3 event: ', s3EventStr)
+    const s3Event = JSON.parse(s3EventStr)
+    await processS3Event(s3Event)
+  }
+}
 
+async function processS3Event(event: S3Event) {
   for (const record of event.Records) {
     const key = record.s3.object.key
     console.log('Processing S3 item with key: ', key)
+
+    const connections = await getConnectionIds()
 
     const payload = {
       imageId: key

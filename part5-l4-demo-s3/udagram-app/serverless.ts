@@ -5,7 +5,7 @@ import postGroup from '@functions/post-group';
 import getImages from '@functions/get-images';
 import getImage from '@functions/get-image';
 import postImage from '@functions/post-image';
-import sendNotification from "@functions/s3/sendNotification";
+import sendNotification from "@functions/sns/sendNotification";
 import elasticSearchSync from "@functions/elastic/elasticSearchSync"
 import connectHandler from "@functions/websocket/connectHandler";
 import disconnectHandler from "@functions/websocket/disconnectHandler";
@@ -177,14 +177,21 @@ const serverlessConfiguration: AWS = {
       },
       ImagesBucket: {
         Type: 'AWS::S3::Bucket',
+        DependsOn: ['ImagesTopic','SNSTopicPolicy'],
         Properties: {
           BucketName: '${self:provider.environment.IMAGES_S3_BUCKET}',
           NotificationConfiguration: {
-            LambdaConfigurations: [
+            /*LambdaConfigurations: [  // Comment out LambdaConfiguration because we now use SNS TopicConfiguration
               {
                 Event: 's3:ObjectCreated:*',
-                // In this file the resource is called 'SendNotification' but CloudFOrmation adds a 'LambdaFunction'-suffix to it.
+                // In this file the resource is called 'SendNotification' but CloudFormation adds a 'LambdaFunction'-suffix to it.
                 Function: { "Fn::GetAtt" : [ "SendNotificationLambdaFunction", "Arn" ] }  // GetAtt function from CloudFormation.
+              }
+            ],*/
+            TopicConfigurations: [
+              {
+                Event: 's3:ObjectCreated:*',
+                Topic: { 'Ref' : 'ImagesTopic' }
               }
             ]
           },
@@ -217,6 +224,22 @@ const serverlessConfiguration: AWS = {
             ]
           },
           Bucket: { "Ref" : "ImagesBucket" }  // Ref function from CloudFormation
+        }
+      },
+      ThumbnailsBucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: '${self:provider.environment.THUMBNAILS_S3_BUCKET}',
+          CorsConfiguration: {
+            CorsRules: [
+              {
+                AllowedOrigins: ['*'],
+                AllowedHeaders: ['*'],
+                AllowedMethods: ['GET','PUT','POST','DELETE','HEAD'],
+                MaxAge: 3000
+              }
+            ]
+          }
         }
       },
       SendNotificationPermission: {
@@ -259,11 +282,40 @@ const serverlessConfiguration: AWS = {
                   Specifying the resource isn't enough. I had to provide a condition with my ip address aswell. */
                 Resource: { "Fn::Sub": "arn:aws:es:${self:provider.region}:${AWS::AccountId}:domain/images-search-${self:provider.stage}/*" },
                 Condition: {
-                  IpAddress: { 'aws:SourceIp': ['${self:provider.environment.MY_IP_ADDRESS}/32']}
+                  IpAddress: { 'aws:SourceIp': ['${self:custom.myIpAddress}/32']}
                 }
               }
             ]
           }
+        }
+      },
+      ImagesTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          DisplayName: 'Image bucket topic',
+          TopicName: '${self:custom.snsTopicName}'
+        }
+      },
+      SNSTopicPolicy: {
+        Type: 'AWS::SNS::TopicPolicy',
+        Properties: {
+          PolicyDocument: {
+            Id: 'ImagesSNSTopicPolicy',
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Sid : "PublisherImageBucket",
+                Effect: 'Allow',
+                Principal: '*',
+                Action: 'sns:Publish',
+                Resource:  {Ref: 'ImagesTopic'},
+                Condition: {
+                  ArnLike: {'aws:SourceArn': ['arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}']}
+                }
+              }
+            ]
+          },
+          Topics: [ {Ref: 'ImagesTopic'} ]
         }
       }
     }
@@ -277,6 +329,9 @@ const serverlessConfiguration: AWS = {
   },
   package: { individually: true },
   custom: {
+    // Declared these environment variables here to avoid exposing them to AWS (as environment variables of Lambda functions)
+    myIpAddress: '${env:MY_IP_ADDRESS}',  // get current ip address and deploy with: MY_IP_ADDRESS=$(curl -s https://checkip.amazonaws.com/) sls deploy
+    snsTopicName: 'imagesTopic-${self:provider.stage}',
     esbuild: {
       bundle: true,
       minify: false,

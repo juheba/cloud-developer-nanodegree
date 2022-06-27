@@ -45,7 +45,7 @@ export const handler: DynamoDBStreamHandler = async (event: DynamoDBStreamEvent)
     const newItem = record.dynamodb.NewImage
     const imageId = newItem.imageId.S
     const body = {
-      imageId: newItem.imageId.S,
+      imageId: imageId,
       groupId: newItem.groupId.S,
       imageUrl: newItem.imageUrl.S,
       title: newItem.title.S,
