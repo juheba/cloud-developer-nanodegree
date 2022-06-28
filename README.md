@@ -18,6 +18,6 @@
   </tr>
   <tr>
     <td><b>Lesson 4</b></td>
-    <td><a href="./part5-l4-demo-s3/">Exercise - Serverless Template Udagram App with Event Processing</a></td>
+    <td><a href="./part5-l4-exercise-serverless-event-processing/">Exercise - Serverless Template Udagram App with Event Processing</a></td>
   </tr>
 </table>
