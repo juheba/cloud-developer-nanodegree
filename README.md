@@ -20,4 +20,8 @@
     <td><b>Lesson 4</b></td>
     <td><a href="./part5-l4-exercise-serverless-event-processing/">Exercise - Serverless Template Udagram App with Event Processing</a></td>
   </tr>
+  <tr>
+    <td><b>Lesson 5</b></td>
+    <td><a href="./part5-l5-exercise-serverless-authentication/">WIP - something something authentication</a></td>
+  </tr>
 </table>
