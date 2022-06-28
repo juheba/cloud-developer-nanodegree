@@ -1,0 +1,1 @@
+export { default as auth0Authorizer } from './auth0Authorizer'
