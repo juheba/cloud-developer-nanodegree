@@ -1,13 +1,25 @@
 import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult, APIGatewayAuthorizerHandler } from 'aws-lambda'
 import { middyfy } from '@libs/lambda';
+import * as AWS from 'aws-sdk';
+import { verify } from 'jsonwebtoken';
+import { JwtToken } from "../../../auth/JwtToken";
+
+
+const secretId = process.env.AUTH_0_SECRET_ID
+const secretField = process.env.AUTH_0_SECRET_FIELD
+
+const client = new AWS.SecretsManager()
+
+// cache secret if a Lambda instance is reused
+let cachedSecret: string
 
 export const handler: APIGatewayAuthorizerHandler = async (event: APIGatewayTokenAuthorizerEvent): Promise<APIGatewayAuthorizerResult> => {
   console.log('Processing authorizer event', JSON.stringify(event))
   try {
-    verifyToken(event.authorizationToken)
+    const decodedToken = await verifyToken(event.authorizationToken)
     console.log('User was authorized')
     return {
-      principalId: 'user',
+      principalId: decodedToken.sub,
       policyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -20,7 +32,7 @@ export const handler: APIGatewayAuthorizerHandler = async (event: APIGatewayToke
 
       }
     }
-  } catch (e ) {
+  } catch (e) {
     console.log('User was not authorized', e.message)
   }
   return {
@@ -41,7 +53,7 @@ export const handler: APIGatewayAuthorizerHandler = async (event: APIGatewayToke
 
 export const main = middyfy(handler);
 
-function verifyToken(authHeader: string) {
+async function verifyToken(authHeader: string): Promise<JwtToken> {
   if (!authHeader) {
     throw new Error('No authentication header')
   }
@@ -53,9 +65,19 @@ function verifyToken(authHeader: string) {
   const split = authHeader.split(' ')
   const token = split[1]
 
-  if (token != '123') {
-    throw new Error('Invalid token')
-  }
+  const secretObject: any = await getSecret()
+  const secret = secretObject[secretField]
 
-  // A request has been authorized.
+  return verify(token, secret) as JwtToken
+}
+
+async function getSecret() {
+  if (cachedSecret) return cachedSecret
+
+  const data = await client.getSecretValue({
+    SecretId: secretId
+  }).promise()
+
+  cachedSecret = data.SecretString
+  return JSON.parse(cachedSecret)
 }
