@@ -1,22 +1,31 @@
-import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult, APIGatewayAuthorizerHandler } from 'aws-lambda'
+import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult } from 'aws-lambda'
 import { middyfy } from '@libs/lambda';
-import * as AWS from 'aws-sdk';
 import { verify } from 'jsonwebtoken';
 import { JwtToken } from "../../../auth/JwtToken";
-
+import secretsManager from "@middy/secrets-manager";
 
 const secretId = process.env.AUTH_0_SECRET_ID
 const secretField = process.env.AUTH_0_SECRET_FIELD
+const region = process.env.REGION
 
-const client = new AWS.SecretsManager()
+const middySecretConfig = {
+  fetchData: {
+    AUTH0_SECRET: secretId
+  },
+  awsClientOptions: {
+    region: region,
+  },
+  cacheExpiry: 60000,
+  setToContext: true
+}
 
-// cache secret if a Lambda instance is reused
-let cachedSecret: string
-
-export const handler: APIGatewayAuthorizerHandler = async (event: APIGatewayTokenAuthorizerEvent): Promise<APIGatewayAuthorizerResult> => {
+export const handler = async (
+  event: APIGatewayTokenAuthorizerEvent,
+  context: any
+): Promise<APIGatewayAuthorizerResult> => {
   console.log('Processing authorizer event', JSON.stringify(event))
   try {
-    const decodedToken = await verifyToken(event.authorizationToken)
+    const decodedToken = verifyToken(event.authorizationToken, context.AUTH0_SECRET[secretField])
     console.log('User was authorized')
     return {
       principalId: decodedToken.sub,
@@ -51,9 +60,10 @@ export const handler: APIGatewayAuthorizerHandler = async (event: APIGatewayToke
   }
 }
 
-export const main = middyfy(handler);
+export const main = middyfy(handler)
+  .use(secretsManager(middySecretConfig));
 
-async function verifyToken(authHeader: string): Promise<JwtToken> {
+function verifyToken(authHeader: string, secret: string): JwtToken {
   if (!authHeader) {
     throw new Error('No authentication header')
   }
@@ -65,19 +75,5 @@ async function verifyToken(authHeader: string): Promise<JwtToken> {
   const split = authHeader.split(' ')
   const token = split[1]
 
-  const secretObject: any = await getSecret()
-  const secret = secretObject[secretField]
-
   return verify(token, secret) as JwtToken
-}
-
-async function getSecret() {
-  if (cachedSecret) return cachedSecret
-
-  const data = await client.getSecretValue({
-    SecretId: secretId
-  }).promise()
-
-  cachedSecret = data.SecretString
-  return JSON.parse(cachedSecret)
 }
