@@ -32,9 +32,6 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   
   return {
       statusCode: 201,
-      headers: {
-          'Access-Control-Allow-Origin': '*'
-      },
       body: JSON.stringify({
           newItem
       })
@@ -73,9 +70,6 @@ export const main = middyfy(handler);
   const err = {statusCode:400, errorCode:'T000', message:'Bad request parameter', details}
   return {
     statusCode: 400,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
     body: JSON.stringify(err)
   }
 }

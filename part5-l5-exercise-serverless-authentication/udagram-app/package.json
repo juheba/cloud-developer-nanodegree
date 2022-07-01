@@ -10,8 +10,9 @@
     "node": ">=14.15.0"
   },
   "dependencies": {
-    "@middy/core": "^2.5.3",
-    "@middy/http-json-body-parser": "^2.5.3",
+    "@middy/core": "^2.5.7",
+    "@middy/http-cors": "^2.5.7",
+    "@middy/http-json-body-parser": "^2.5.7",
     "@middy/secrets-manager": "^3.1.0",
     "elasticsearch": "^15.5.0",
     "http-aws-es": "^6.0.0",

@@ -33,9 +33,6 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   // Return result
   return {
     statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
     body: JSON.stringify({
       items
     })
@@ -177,9 +174,6 @@ function createBadRequestResponse(details) {
   const err = {statusCode:400, errorCode:'T000', message:'Bad request parameter', details}
   return {
     statusCode: 400,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
     body: JSON.stringify(err)
   }
 }
@@ -195,9 +189,6 @@ function createNotFoundResponse(details) {
   const err = {statusCode:404, errorCode:'T001', message:'Resource not found', details}
   return {
     statusCode: 404,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
     body: JSON.stringify(err)
   }
 }

@@ -38,7 +38,6 @@ export const handler = async (
             Resource: '*'
           }
         ]
-
       }
     }
   } catch (e) {
@@ -55,7 +54,6 @@ export const handler = async (
           Resource: '*'
         }
       ]
-
     }
   }
 }

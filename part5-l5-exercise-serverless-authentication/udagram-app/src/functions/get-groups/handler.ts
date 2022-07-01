@@ -36,9 +36,6 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   // Return result
   return {
     statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
     body: JSON.stringify({
       items,
       // Encode the JSON object so a client can return it in a URL as is
@@ -120,9 +117,6 @@ function createBadRequestResponse(details) {
   const err = {statusCode:400, errorCode:'T000', message:'Bad request parameter', details}
   return {
     statusCode: 400,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    },
     body: JSON.stringify(err)
   }
 }
