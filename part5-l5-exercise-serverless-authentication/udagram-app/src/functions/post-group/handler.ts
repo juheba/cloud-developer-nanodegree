@@ -2,6 +2,7 @@ import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } f
 import * as AWS from "aws-sdk";
 import { randomUUID } from 'crypto'
 import { middyfy } from '@libs/lambda';
+import { getUserId } from "src/auth/utils";
 
 const docClient = new AWS.DynamoDB.DocumentClient()
 const groupsTable = process.env.GROUPS_TABLE
@@ -9,6 +10,10 @@ const groupsTable = process.env.GROUPS_TABLE
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log('Processing event: ', event)
+
+  const authorization = event.headers.Authorization
+  const jwtToken = authorization.split(' ')[1]
+  const userId = getUserId(jwtToken)
 
   var parsedBody: object;
 
@@ -20,6 +25,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   
   var newItem = {
       id: randomUUID(),
+      userId,
       ...parsedBody
   };
   var params = {

@@ -1,6 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 
-import { symmetricHS256Authorizer as auth0Authorizer } from '@functions/auth'
+import { asymmetricRS256Authorizer as auth0Authorizer } from '@functions/auth'
 import { getGroups, postGroup, getImages, getImage, postImage } from '@functions/index'
 import { sendNotification, resizeImage } from '@functions/sns'
 import elasticSearchSync from "@functions/elastic/elasticSearchSync"
