@@ -1,7 +1,7 @@
 import { APIGatewayTokenAuthorizerEvent, APIGatewayAuthorizerResult } from 'aws-lambda'
 import { middyfy } from '@libs/lambda';
 import { verify } from 'jsonwebtoken';
-import { JwtToken } from "../../../auth/JwtToken";
+import { JwtToken } from "../../../../auth/JwtToken";
 import secretsManager from "@middy/secrets-manager";
 
 const secretId = process.env.AUTH_0_SECRET_ID

@@ -1,1 +1,1 @@
-export { default as auth0Authorizer } from './auth0Authorizer'
+export { default as symmetricHS256Authorizer } from './auth0/symmetricHS256Authorizer'

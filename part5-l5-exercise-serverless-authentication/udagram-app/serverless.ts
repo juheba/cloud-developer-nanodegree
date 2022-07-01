@@ -1,16 +1,10 @@
 import type { AWS } from '@serverless/typescript';
 
-import auth0Authorizer from '@functions/auth/auth0Authorizer'
-import getGroups from '@functions/get-groups';
-import postGroup from '@functions/post-group';
-import getImages from '@functions/get-images';
-import getImage from '@functions/get-image';
-import postImage from '@functions/post-image';
-import sendNotification from "@functions/sns/sendNotification";
-import resizeImage from "@functions/sns/resizeImage";
+import { symmetricHS256Authorizer as auth0Authorizer } from '@functions/auth'
+import { getGroups, postGroup, getImages, getImage, postImage } from '@functions/index'
+import { sendNotification, resizeImage } from '@functions/sns'
 import elasticSearchSync from "@functions/elastic/elasticSearchSync"
-import connectHandler from "@functions/websocket/connectHandler";
-import disconnectHandler from "@functions/websocket/disconnectHandler";
+import { connectHandler, disconnectHandler } from '@functions/websocket'
 
 const serverlessConfiguration: AWS = {
   service: 'udagram-app',
@@ -26,8 +20,6 @@ const serverlessConfiguration: AWS = {
       shouldStartNameWithService: true,
     },
     environment: {
-      /*MY_AWS_ACCESS_KEY_ID: '${env:MY_AWS_ACCESS_KEY_ID}',
-      MY_AWS_SECRET_ACCESS_KEY: '${env:MY_AWS_SECRET_ACCESS_KEY}',*/
       MY_IP_ADDRESS: '${env:MY_IP_ADDRESS}',  // get current ip address and deploy with: MY_IP_ADDRESS=$(curl https://checkip.amazonaws.com/) sls deploy
       REGION: '${self:provider.region}',
       STAGE: '${self:provider.stage}',
