@@ -22,6 +22,10 @@
   </tr>
   <tr>
     <td><b>Lesson 5</b></td>
-    <td><a href="./part5-l5-exercise-serverless-authentication/">WIP - something something authentication</a></td>
+    <td><a href="./part5-l5-exercise-serverless-authentication/">Exercise - Serverless Template Udagram App with Event Processing and Authentication</a></td>
+  </tr>
+  <tr>
+    <td><b>Lesson 6</b></td>
+    <td><a href="./part5-l6-exercise-best-practices/">Exercise - Best practices with hexagonal architecture, ...</a></td>
   </tr>
 </table>
