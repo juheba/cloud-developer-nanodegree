@@ -1,50 +1,62 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import * as AWS from "aws-sdk";
 import { middyfy } from '@libs/lambda';
 
-const docClient = new AWS.DynamoDB.DocumentClient()
-const groupsTable = process.env.GROUPS_TABLE
-
+import { getImagesByGroup } from "../../../businessLogic/Images";
+import { validateGroupExists } from "../../../businessLogic/Groups";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log('Processing event: ', event)
 
+  let groupId: string;
   let limit: number;
   let nextKey: AWS.DynamoDB.Key;
 
   try {
+    groupId = parseGroupParameter(event)
     limit = parseLimitParameter(event)  // Maximum number of elements to return
     nextKey = parseNextKeyParameter(event)  // Next key to continue scan operation if necessary
   } catch (e) {
     return createBadRequestResponse(e.message)
   }
 
-  // Scan operation parameters
-
-  const scanParams = {
-    TableName: groupsTable,
-    Limit: limit,
-    ExclusiveStartKey: nextKey
+  if (!await validateGroupExists(groupId)) {
+    return createNotFoundResponse(`Group with \'groupId\' ${groupId} does not exist.`)
   }
-  console.log('Scan params: ', scanParams)
 
-  const result = await docClient.scan(scanParams).promise()
-
-  console.log('Result: ', result)
-  const items = result.Items
+  const result = await getImagesByGroup({groupId, limit, nextKey})
 
   // Return result
   return {
     statusCode: 200,
     body: JSON.stringify({
-      items,
-      // Encode the JSON object so a client can return it in a URL as is
-      nextKey: encodeNextKey(result.LastEvaluatedKey)
+      items: result.images,
+      nextKey: encodeNextKey(result.lastKey)
     })
   }
 };
 
 export const main = middyfy(handler);
+
+/**
+ * Get value of the groupId path parameter or return "undefined"
+ *
+ * @param {Object} event HTTP event passed to a Lambda function
+ *
+ * @returns {string} value of groupId or "undefined" if the parameter is not defined
+ * @throws {Error} if groupId is not a valid (number, null or id is missing)
+ */
+function parseGroupParameter(event) {
+  let groupId = event.pathParameters.groupId
+
+  console.log(groupId)
+  console.log(!isNaN(groupId))
+  console.log(groupId === undefined)
+
+  if (!isNaN(groupId) || groupId === undefined) {
+    throw new Error('parameter \'groupId\' is not valid.')
+  }
+  return groupId
+}
 
 /**
  * Get value of the limit query parameter or return "undefined"
@@ -54,7 +66,7 @@ export const main = middyfy(handler);
  * @returns {string} value of limit or "undefined" if the parameter is not defined
  * @throws {Error} if limit is not a number or limit is a negative number
  */
-function parseLimitParameter(event) {
+ function parseLimitParameter(event) {
   let limit = getQueryParameter(event, 'limit')
 
   if (limit !== undefined) {
@@ -82,7 +94,7 @@ function parseNextKeyParameter(event) {
 
   if (nextKey !== undefined) {
     nextKey = decodeNextKey(nextKey)
-    if (nextKey == null || nextKey.id === undefined) {
+    if (nextKey == null || nextKey.timestamp === undefined || nextKey.groupId === undefined) {
       throw new Error('parameter \'nextKey\' is not valid.')
     }
   }
@@ -109,14 +121,29 @@ function getQueryParameter(event, name) {
 /**
  * Creates a 400 BAD REQUEST response
  *
- * @param {string} details optional details to describe the error
+ * @param details optional details to describe the error
  *
  * @returns {string} a json stringifed bad request response
  */
-function createBadRequestResponse(details) {
+function createBadRequestResponse(details: string) {
   const err = {statusCode:400, errorCode:'T000', message:'Bad request parameter', details}
   return {
     statusCode: 400,
+    body: JSON.stringify(err)
+  }
+}
+
+/**
+ * Creates a 404 NOT FOUND response
+ *
+ * @param details optional details to describe the error
+ *
+ * @returns {string} a json stringifed not found response
+ */
+function createNotFoundResponse(details: string) {
+  const err = {statusCode:404, errorCode:'T001', message:'Resource not found', details}
+  return {
+    statusCode: 404,
     body: JSON.stringify(err)
   }
 }

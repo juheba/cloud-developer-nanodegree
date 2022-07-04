@@ -1,21 +1,15 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import * as AWS  from 'aws-sdk'
-import { randomUUID } from 'crypto'
 import { middyfy } from '@libs/lambda';
 
-const docClient = new AWS.DynamoDB.DocumentClient()
-const s3 = new AWS.S3({signatureVersion: 'v4'})
-
-const groupsTable = process.env.GROUPS_TABLE
-const imagesTable = process.env.IMAGES_TABLE
-const bucketName = process.env.IMAGES_S3_BUCKET
-const urlExpiration = parseInt(process.env.SIGNED_URL_EXPIRATION)
+import { CreateImageRequest } from "../../../requests/CreateImageRequest";
+import { createImage, getUploadUrl } from "../../../businessLogic/Images";
+import { validateGroupExists } from "../../../businessLogic/Groups";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log('Processing event: ', event)
 
   let groupId: string;
-  var parsedBody: object;
+  var parsedBody: CreateImageRequest;
 
   try {
     groupId = parseGroupParameter(event)
@@ -23,10 +17,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     return createBadRequestResponse(e.message)
   }
 
-  try {
-    await validateGroupExists(groupId)
-  } catch (e) {
-    return createNotFoundResponse(e.message)
+  if (!await validateGroupExists(groupId)) {
+    return createNotFoundResponse(`Group with \'groupId\' ${groupId} does not exist.`)
   }
 
   try {
@@ -34,8 +26,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   } catch (e) {
     return createBadRequestResponse(e.message)
   }
-  
-  const newItem = await createImage(groupId, parsedBody)
+
+  parsedBody.groupId = groupId
+
+  const newItem = await createImage(parsedBody)
   const uploadUrl = await getUploadUrl(newItem.imageId)
 
   return {
@@ -64,33 +58,6 @@ export const main = middyfy(handler);
     throw new Error('parameter \'groupId\' is not valid.')
   }
   return groupId
-}
-
-/**
- * Validates if a group exists.
- *
- * @param {string} groupId  Id of a image group
- * @returns {boolean}  true if group exists
- * @throws {Error}  if group does not exist
- */
-async function validateGroupExists(groupId: string) {
-  const getParams = {
-    TableName: groupsTable,
-    Key: {
-      id: groupId
-    }
-  }
-  console.log('Get params: ', getParams)
-
-  const result = await docClient.get(getParams).promise()
-
-  console.log('Get group: ', result)
-
-  if (!result.Item) {
-    throw new Error(`Group with \'groupId\' ${groupId} does not exist.`)
-  }
-
-  return true
 }
 
 /**
@@ -128,10 +95,10 @@ function createNotFoundResponse(details) {
  *
  * @param {Object} event HTTP event passed to a Lambda function
  *
- * @returns {Object} JSON representation of the provided string
- * @throws {Error} if body is undefined or null
+ * @returns JSON representation of the provided string
+ * @throws Error if body is undefined or null
  */
- function parseBody(event) {
+ function parseBody(event): CreateImageRequest {
   // The middy plugin already convert API Gateways `event.body` property, originally passed as a stringified JSON, to its corresponding parsed object.
   //var parsedBody = typeof event.body === 'string' ? JSON.parse(event.body) : event.body  // Not necessary because of middy plugin
 
@@ -139,32 +106,5 @@ function createNotFoundResponse(details) {
   if (parsedBody === undefined || parsedBody === null) {
     throw new Error('body does not exist.')
   }
-  return parsedBody
-}
-
-async function createImage(groupId: string, parsedBody: object) {
-  const imageId = randomUUID()
-  var newItem = {
-    imageId,
-    groupId,
-    timestamp: new Date().toISOString(),
-    ...parsedBody,
-    imageUrl: `https://${bucketName}.s3.amazonaws.com/${imageId}`
-  };
-  var params = {
-      TableName : imagesTable,
-      Item: newItem
-  };
-  console.log('Put params: ', params)
-
-  await docClient.put(params).promise()
-  return newItem
-}
-
-async function getUploadUrl(imageId: string) {
-  return s3.getSignedUrl('putObject', {  // The URL will allow to perform the PUT operation
-    Bucket: bucketName,
-    Key: imageId,
-    Expires: urlExpiration
-  })
+  return parsedBody as CreateImageRequest
 }

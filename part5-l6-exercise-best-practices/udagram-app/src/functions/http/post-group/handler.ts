@@ -1,11 +1,8 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import * as AWS from "aws-sdk";
-import { randomUUID } from 'crypto'
 import { middyfy } from '@libs/lambda';
-import { getUserId } from "src/auth/utils";
 
-const docClient = new AWS.DynamoDB.DocumentClient()
-const groupsTable = process.env.GROUPS_TABLE
+import { createGroup } from "../../../businessLogic/Groups";
+import { CreateGroupRequest } from "../../../requests/CreateGroupRequest";
 
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -13,28 +10,17 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
   const authorization = event.headers.Authorization
   const jwtToken = authorization.split(' ')[1]
-  const userId = getUserId(jwtToken)
+  
 
-  var parsedBody: object;
+  var parsedBody: CreateGroupRequest;
 
   try {
     parsedBody = parseBody(event)
   } catch (e) {
     return createBadRequestResponse(e.message)
   }
-  
-  var newItem = {
-      id: randomUUID(),
-      userId,
-      ...parsedBody
-  };
-  var params = {
-      TableName : groupsTable,
-      Item: newItem
-  };
-  console.log('Put params: ', params)
-  
-  await docClient.put(params).promise()
+
+  const newItem = await createGroup(parsedBody, jwtToken)
   
   return {
       statusCode: 201,
