@@ -18,7 +18,8 @@ export async function createGroup(
     id: uuidv4(),
     userId: getUserId(jwtToken),
     name: createGroupRequest.name,
-    description: createGroupRequest.description
+    description: createGroupRequest.description,
+    timestamp: new Date().toISOString()
   }
   return await groupAccess.createGroup(group)
 }

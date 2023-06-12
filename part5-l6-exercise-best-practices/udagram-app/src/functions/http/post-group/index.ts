@@ -17,5 +17,9 @@ export default {
         }
       }
     }
-  ]
+  ],
+  deploymentSettings: {  // Config for canary deployments
+    type: 'Linear10PercentEvery1Minute',
+    alias: 'Live'
+  }
 };

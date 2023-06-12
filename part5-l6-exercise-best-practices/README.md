@@ -12,9 +12,24 @@ MY_IP_ADDRESS=$(curl -s https://checkip.amazonaws.com/) sls deploy  # deploy wit
 sls remove    # remove infrastructure and cloudformation template from aws
 
 # Connecting to the websocket
-# Remember nk6wxcr9j1 is a generated api id
+# Remember 2gt4tl2bni is a generated api id
 wscat -c wss://2gt4tl2bni.execute-api.eu-central-1.amazonaws.com/dev
 ```
+Attention! sls remove - Check if all created resources are deleted:
+* GatewayResponseDefault4XX: 'AWS::ApiGateway::GatewayResponse'
+* GroupsTable: 'AWS::DynamoDB::Table'
+* ImagesTable: 'AWS::DynamoDB::Table'
+* ConnectionsTable: 'AWS::DynamoDB::Table'
+* ImagesBucket: 'AWS::S3::Bucket'
+* BucketPolicy: 'AWS::S3::BucketPolicy'
+* ThumbnailsBucket: 'AWS::S3::Bucket'
+* SendNotificationPermission: 'AWS::Lambda::Permission'
+* ImagesSearch: 'AWS::Elasticsearch::Domain'  ==> creates a EC2 Instance t2
+* ImagesTopic: 'AWS::SNS::Topic'
+* SNSTopicPolicy: 'AWS::SNS::TopicPolicy'
+* Lambda Functions
+
+
 ### 🔴 OFFLINE
 1. go to folder path `/part5-l6-exercise-best-practices/udagram-app`
 2. first terminal: sls offline

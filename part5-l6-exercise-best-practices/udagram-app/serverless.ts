@@ -13,6 +13,7 @@ const serverlessConfiguration: AWS = {
     'serverless-esbuild',
     //'serverless-reqvalidator',
     'serverless-aws-documentation',
+    'serverless-plugin-canary-deployments',
     'serverless-dynamodb-local',
     'serverless-offline'
   ],
@@ -35,8 +36,8 @@ const serverlessConfiguration: AWS = {
       IMAGES_TABLE: 'images-${self:provider.stage}',
       IMAGE_ID_INDEX: 'ImageIdIndex',
       CONNECTIONS_TABLE: 'connections-${self:provider.stage}',
-      IMAGES_S3_BUCKET: 'udagram-images-${self:provider.stage}',
-      THUMBNAILS_S3_BUCKET: 'udagram-thumbnail-${self:provider.stage}',
+      IMAGES_S3_BUCKET: 'juheba-udagram-images-${self:provider.stage}',
+      THUMBNAILS_S3_BUCKET: 'juheba-udagram-thumbnail-${self:provider.stage}',
       SIGNED_URL_EXPIRATION: '300',
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
@@ -110,6 +111,11 @@ const serverlessConfiguration: AWS = {
             Effect: "Allow",
             Action: [ "kms:Decrypt" ],
             Resource: { "Fn::GetAtt" : [ "KMSKey", "Arn" ] }
+          },
+          {
+            Effect: "Allow",
+            Action: [ "codedeploy:*" ],
+            Resource: '*'
           }
         ]
       }
@@ -236,6 +242,10 @@ const serverlessConfiguration: AWS = {
                 MaxAge: 3000
               }
             ]
+          },
+          PublicAccessBlockConfiguration: {
+            BlockPublicPolicy: false,
+            RestrictPublicBuckets: false
           }
         }
       },
