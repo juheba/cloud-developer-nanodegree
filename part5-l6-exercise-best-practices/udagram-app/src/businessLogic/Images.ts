@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto'
+import { v4 as uuidv4 } from 'uuid';
 import { Image } from '../models/Image'
 import { ImagesWithLastKey } from '../models/ImagesWithLastKey'
 import { ImageAccess } from '../dataLayer/imageAccess'
@@ -19,7 +19,7 @@ export async function getImage(getImageRequest: GetImageRequest): Promise<Image>
 export async function createImage(
   createImageRequest: CreateImageRequest
 ): Promise <Image> {
-  const imageId = randomUUID()
+  const imageId = uuidv4()
   const image: Image = {
     imageId,
     groupId: createImageRequest.groupId,

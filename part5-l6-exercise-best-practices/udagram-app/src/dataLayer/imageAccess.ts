@@ -4,10 +4,23 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Image } from "../models/Image";
 import { ImagesWithLastKey } from "../models/ImagesWithLastKey";
 
+function createDynamoDBClient(): DocumentClient {
+  if (process.env.IS_OFFLINE) {
+    console.log('Creating a local DynamoDB instance')
+    return new AWS.DynamoDB.DocumentClient({
+      region: 'localhost',
+      endpoint: 'http://localhost:8000',
+      accessKeyId: 'DEFAULT_ACCESS_KEY',  // needed if you don't have aws credentials at all in env
+      secretAccessKey: 'DEFAULT_SECRET' // needed if you don't have aws credentials at all in env
+    })
+  }
+  return new AWS.DynamoDB.DocumentClient();
+}
+
 export class ImageAccess {
 
   constructor(
-    private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
+    private readonly docClient: DocumentClient = createDynamoDBClient(),
     private readonly imagesTable = process.env.IMAGES_TABLE,
     private readonly imageIdIndex = process.env.IMAGE_ID_INDEX,
     private readonly bucketName = process.env.IMAGES_S3_BUCKET,

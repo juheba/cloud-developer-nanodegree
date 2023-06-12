@@ -8,4 +8,7 @@ jspm_packages
 # esbuild directories
 .esbuild
 
+# dynamodb directories
+.dynamodb
+
 package-lock.json

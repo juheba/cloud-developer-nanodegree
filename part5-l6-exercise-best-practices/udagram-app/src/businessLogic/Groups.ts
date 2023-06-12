@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto'
+import { v4 as uuidv4 } from 'uuid';
 import { Group } from '../models/Group'
 import { GroupsWithLastKey } from "../models/GroupsWithLastKey";
 import { GroupAccess } from '../dataLayer/groupAccess'
@@ -15,7 +15,7 @@ export async function createGroup(
   jwtToken: string
 ): Promise <Group> {
   const group = {
-    id: randomUUID(),
+    id: uuidv4(),
     userId: getUserId(jwtToken),
     name: createGroupRequest.name,
     description: createGroupRequest.description

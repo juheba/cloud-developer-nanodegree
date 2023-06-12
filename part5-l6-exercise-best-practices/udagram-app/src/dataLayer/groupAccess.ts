@@ -4,10 +4,23 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Group } from "../models/Group";
 import { GroupsWithLastKey } from "../models/GroupsWithLastKey";
 
+function createDynamoDBClient(): DocumentClient {
+  if (process.env.IS_OFFLINE) {
+    console.log('Creating a local DynamoDB instance')
+    return new AWS.DynamoDB.DocumentClient({
+      region: 'localhost',
+      endpoint: 'http://localhost:8000',
+      accessKeyId: 'DEFAULT_ACCESS_KEY',  // needed if you don't have aws credentials at all in env
+      secretAccessKey: 'DEFAULT_SECRET' // needed if you don't have aws credentials at all in env
+    })
+  }
+  return new AWS.DynamoDB.DocumentClient();
+}
+
 export class GroupAccess {
 
   constructor(
-    private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
+    private readonly docClient: DocumentClient = createDynamoDBClient(),
     private readonly groupsTable = process.env.GROUPS_TABLE) {
   }
 

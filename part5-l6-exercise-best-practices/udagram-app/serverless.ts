@@ -9,7 +9,13 @@ import { connectHandler, disconnectHandler } from '@functions/websocket'
 const serverlessConfiguration: AWS = {
   service: 'udagram-app',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild'],
+  plugins: [
+    'serverless-esbuild',
+    //'serverless-reqvalidator',
+    'serverless-aws-documentation',
+    'serverless-dynamodb-local',
+    'serverless-offline'
+  ],
   provider: {
     name: "aws",
     runtime: 'nodejs14.x',
@@ -402,6 +408,45 @@ const serverlessConfiguration: AWS = {
     // Declared these environment variables here to avoid exposing them to AWS (as environment variables of Lambda functions)
     myIpAddress: '${env:MY_IP_ADDRESS}',  // get current ip address and deploy with: MY_IP_ADDRESS=$(curl -s https://checkip.amazonaws.com/) sls deploy
     snsTopicName: 'imagesTopic-${self:provider.stage}',
+    "serverless-offline": {
+      httpPort: 3003
+    },
+    dynamodb: {
+      start: { 
+        port: 8000,
+        inMemory: true,
+        migrate: true,
+      //  seed: true
+      },
+      // Skipping start: DynamoDB Local is not available for stage: dev
+      // We need to whitelist the stage, so that dynamodb is started locally.
+      stages: [
+        'dev' // whitelist dev-stage
+        //'${self:provider.stage}'  // whitelists all stages
+      ],
+      /*seed: {
+        users: {
+          sources: [
+            {
+              table: 'users',
+              sources: ['./users.json']
+            },
+            {
+              table: 'user-roles',
+              sources: ['./userRoles.json']
+            }
+          ]
+        },
+        posts: {
+          sources: [
+            {
+              table: 'blog-posts',
+              sources: ['./blogPosts.json']
+            }
+          ]
+        }
+      }*/
+    },
     esbuild: {
       bundle: true,
       minify: false,
