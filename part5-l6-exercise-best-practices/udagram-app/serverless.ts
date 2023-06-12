@@ -13,6 +13,7 @@ const serverlessConfiguration: AWS = {
     'serverless-esbuild',
     //'serverless-reqvalidator',
     'serverless-aws-documentation',
+    'serverless-plugin-tracing',
     'serverless-plugin-canary-deployments',
     'serverless-dynamodb-local',
     'serverless-offline'
@@ -22,6 +23,10 @@ const serverlessConfiguration: AWS = {
     runtime: 'nodejs14.x',
     region: 'eu-central-1',  // region: '${opt:region, "eu-central-1"}', is buggy - see: https://github.com/serverless/typescript/issues/11
     stage: '${opt:stage, "dev"}',
+    tracing: {
+      lambda: true,
+      apiGateway: true
+    },
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,

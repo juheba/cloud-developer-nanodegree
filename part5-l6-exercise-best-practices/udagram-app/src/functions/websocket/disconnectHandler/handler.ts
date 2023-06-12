@@ -1,7 +1,8 @@
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import * as AWS  from 'aws-sdk'
 import { middyfy } from '@libs/lambda';
 
+const AWSXRay = require('aws-xray-sdk');
+const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 const docClient = new AWS.DynamoDB.DocumentClient()
 
 const connectionsTable = process.env.CONNECTIONS_TABLE

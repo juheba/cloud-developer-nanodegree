@@ -1,9 +1,10 @@
 import { SNSHandler, SNSEvent, S3Event } from "aws-lambda";
-import * as AWS  from 'aws-sdk'
 import { middyfy } from '@libs/lambda';
 
 var Jimp = require('jimp');
 
+const AWSXRay = require('aws-xray-sdk');
+const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 const s3 = new AWS.S3({signatureVersion: 'v4'})
 
 const thumbnailBucketName = process.env.THUMBNAILS_S3_BUCKET

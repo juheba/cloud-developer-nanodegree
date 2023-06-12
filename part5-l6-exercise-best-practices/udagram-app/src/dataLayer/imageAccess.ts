@@ -1,8 +1,10 @@
-import * as AWS from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { Image } from "../models/Image";
 import { ImagesWithLastKey } from "../models/ImagesWithLastKey";
+
+const AWSXRay = require('aws-xray-sdk');
+const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 
 function createDynamoDBClient(): DocumentClient {
   if (process.env.IS_OFFLINE) {

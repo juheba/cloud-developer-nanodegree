@@ -2,6 +2,7 @@ import { handlerPath } from '@libs/handler-resolver';
 
 export default {
   handler: `${handlerPath(__dirname)}/handler.main`,
+  tracing: true,
   environment: {
     ES_ENDPOINT: { "Fn::GetAtt" : [ "ImagesSearch", "DomainEndpoint" ] }  // GetAtt function from CloudFormation.
   },

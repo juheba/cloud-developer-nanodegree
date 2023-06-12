@@ -1,6 +1,6 @@
 // set base url of the api gateway (not the base url of websocket)!
-//export const apiEndpoint = 'https://tqp5hb24k7.execute-api.eu-central-1.amazonaws.com/dev'
-export const apiEndpoint = 'http://localhost:3003/dev'
+export const apiEndpoint = 'https://v54yngwuuc.execute-api.eu-central-1.amazonaws.com/dev'  // AWS eu-central-1
+//export const apiEndpoint = 'http://localhost:3003/dev'  // Localhost
 
 export const authConfig = {
   domain: 'dev-znkiohxr.eu.auth0.com',

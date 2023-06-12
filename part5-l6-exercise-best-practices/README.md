@@ -24,7 +24,7 @@ Attention! sls remove - Check if all created resources are deleted:
 * BucketPolicy: 'AWS::S3::BucketPolicy'
 * ThumbnailsBucket: 'AWS::S3::Bucket'
 * SendNotificationPermission: 'AWS::Lambda::Permission'
-* ImagesSearch: 'AWS::Elasticsearch::Domain'  ==> creates a EC2 Instance t2
+* ImagesSearch: 'AWS::Elasticsearch::Domain'  ==> creates a EC2 Instance t2 and produces running costs
 * ImagesTopic: 'AWS::SNS::Topic'
 * SNSTopicPolicy: 'AWS::SNS::TopicPolicy'
 * Lambda Functions

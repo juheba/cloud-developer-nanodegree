@@ -1,8 +1,9 @@
 import { SNSHandler, SNSEvent, S3Event } from "aws-lambda";
-import * as AWS  from 'aws-sdk'
 import { middyfy } from '@libs/lambda';
 import { deleteConnectionId } from '@functions/websocket/disconnectHandler/handler'
 
+const AWSXRay = require('aws-xray-sdk');
+const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 const docClient = new AWS.DynamoDB.DocumentClient()
 
 const connectionsTable = process.env.CONNECTIONS_TABLE
