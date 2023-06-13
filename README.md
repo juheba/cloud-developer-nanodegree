@@ -28,4 +28,8 @@
     <td><b>Lesson 6</b></td>
     <td><a href="./part5-l6-exercise-best-practices/">Exercise - Best practices with hexagonal architecture, serverless offline, local dynamodb, ...</a></td>
   </tr>
+  <tr>
+    <td><b>Project</b></td>
+    <td><a href="./part5-project/">Project - Serverless Application</a></td>
+  </tr>
 </table>
