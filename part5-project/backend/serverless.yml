@@ -8,9 +8,19 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
+  - serverless-aws-documentation
+  #- serverless-reqvalidator-plugin
 
 package:
   individually: true
+
+custom:
+  documentation:
+    api:
+      info:
+        version: v.1.0.0
+        title: Todo API
+        description: Serverless application for todo management
 
 provider:
   name: aws
@@ -72,7 +82,7 @@ functions:
   # Configure this function - 
   # Provide iamRoleStatements property for performing Actions on DynamoDB
   GetTodos:
-    handler: src/lambda/http/getTodos.handler
+    handler: src/lambda/http/getTodos.main
     events:
       - http:
           method: get
@@ -90,32 +100,32 @@ functions:
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
   # To refer to an AWS resource defined in the "Resources" section, you can use "Resource: !GetAtt <resource-name>.Arn"
   # To validate incoming HTTP requests, we have provided the request schemas in function definition below. 
-#  CreateTodo:
-#    handler: src/lambda/http/createTodo.handler
-#    events:
-#      - http:
-#          method: post
-#          path: todos
-#          cors: true
+  CreateTodo:
+    handler: src/lambda/http/createTodo.main
+    events:
+      - http:
+          method: post
+          path: todos
+          cors: true
 #          authorizer: Auth
-#          request:
-#            schemas:
-#              application/json: ${file(./schemas/create-todo-model.json)}
-#    iamRoleStatements:
-#      - Effect: 'Allow'
-#        Action:
-#          - 'dynamodb:PutItem'
-#        Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}'
+          #request:
+          #  schemas:
+          #    application/json: ${file(./schemas/create-todo-model.json)}
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - 'dynamodb:PutItem'
+        Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}'
 
   ## TEMPLATE START ##
 
-  create:
-    handler: src/lambda/template/create.create
-    events:
-      - http:
-          path: todos
-          method: post
-          cors: true
+#  create:
+#    handler: src/lambda/template/create.create
+#    events:
+#      - http:
+#          path: todos
+#          method: post
+#          cors: true
 
 #  list:
 #    handler: src/lambda/template/list.list
@@ -145,6 +155,7 @@ functions:
 
 resources:
   Resources:
+
     TodosDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:

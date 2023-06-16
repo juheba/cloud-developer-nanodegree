@@ -9,9 +9,9 @@ const logger = createLogger('getTodos')
 
 // Get all TODO items for a current user
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  logger.info('Processing event: ', event)
+  logger.info(`Processing event: ${event}`)
 
-  let userId = '1234';  //getUserId(event);
+  let userId = '1234';  //getUserId(event);  // TODO:
   let limit: number;
   let nextKey: AWS.DynamoDB.Key;
 
@@ -73,7 +73,7 @@ function parseNextKeyParameter(event) {
 
   if (nextKey !== undefined) {
     nextKey = decodeNextKey(nextKey)
-    if (nextKey == null || nextKey.id === undefined) {
+    if (nextKey == null || nextKey.todoId === undefined || nextKey.userId === undefined) {
       throw new Error('parameter \'nextKey\' is not valid.')
     }
   }

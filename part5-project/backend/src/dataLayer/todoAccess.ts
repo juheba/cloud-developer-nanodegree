@@ -3,7 +3,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { TodoItem } from "../models/TodoItem";
 import { TodosWithLastKey } from "../models/TodosWithLastKey";
 
-import { createLogger } from '../utils/logger'
+import { createLogger} from '@utils'
 
 const logger = createLogger('todoAccess')
 
@@ -46,7 +46,7 @@ export class TodoAccess {
   }
 
   async getTodosForUser(userId: string, limit: number, nextKey: AWS.DynamoDB.Key): Promise<TodosWithLastKey> {
-    logger.info('Getting all todos by user')
+    logger.info({message: 'Getting todos by user', userId: userId})
 
     const queryParams = {
       TableName: this.todosTable,
@@ -71,7 +71,7 @@ export class TodoAccess {
   }
 
   async getTodosById(todoId: string): Promise<TodoItem> {
-    logger.info('Getting a todo by id')
+    logger.info({message: 'Getting a todo by id', todoId: todoId})
 
     const queryParams = {
       TableName: this.todosTable,
@@ -91,7 +91,7 @@ export class TodoAccess {
   }
 
   async createTodo(todo: TodoItem) {
-    logger.info('Creating a todo with id: ', todo.todoId)
+    logger.info({message: 'Creating a todo', todoId: todo.todoId})
 
     var params = {
       TableName : this.todosTable,
@@ -102,7 +102,7 @@ export class TodoAccess {
   }
 
   async updateTodo(newTodo) {
-    logger.info('Updating a todo with id: ', newTodo.todoId)
+    logger.info({message: 'Updating a todo', todoId: newTodo.todoId})
 
     var params = {
       TableName : this.todosTable,
@@ -121,7 +121,7 @@ export class TodoAccess {
   }
 
   async deleteTodo(todoId: string): Promise<Boolean> {
-    logger.info('Delete todo: ', todoId)
+    logger.info({message: 'Delete todo', todoId: todoId})
     const params = {
       TableName: this.todosTable,
       Key: {
@@ -147,7 +147,7 @@ export class TodoAccess {
    * @throws Error if todo does not exist
    */
   async validateTodoExists(todoId: string): Promise<Boolean> {
-    logger.info('Validate todo exists: ', todoId)
+    logger.info({message: 'Validate todo exists', todoId: todoId})
     const getParams = {
       TableName: this.todosTable,
       Key: {

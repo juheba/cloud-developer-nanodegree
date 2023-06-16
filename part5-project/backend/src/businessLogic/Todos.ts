@@ -8,6 +8,10 @@ import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 import { parseUserId } from '../auth/utils'
 
+import { createLogger} from '@utils'
+
+const logger = createLogger('BusinessLayer/Todos')
+
 const todoAccess = new TodoAccess()
 //const attatchmentsAccess = new AttatchmentsAccess()
 
@@ -20,12 +24,12 @@ export async function getTodosForUser(userId: string, getTodosRequest: GetTodosR
 }
 
 export async function createTodo(
+  userId: string,
   createTodoRequest: CreateTodoRequest,
-  jwtToken: string
 ): Promise <TodoItem> {
   const todoId = uuidv4()
-  const todo = {
-    userId: parseUserId(jwtToken),
+  const todo: TodoItem = {
+    userId,
     todoId,
     createdAt: new Date().toISOString(),
     name: createTodoRequest.name,
