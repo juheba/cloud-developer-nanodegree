@@ -52,7 +52,7 @@ export const main = middyfy(handler);
 function parseTodoParameter(event) {
   let todoId = event.pathParameters.todoId
 
-  if (!isNaN(todoId) || todoId === undefined) {
+  if (todoId === undefined) {
     throw new Error('parameter \'todoId\' is not valid.')
   }
   return todoId

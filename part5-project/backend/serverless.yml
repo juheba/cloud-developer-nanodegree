@@ -9,8 +9,8 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
   - serverless-aws-documentation
-  #- serverless-reqvalidator-plugin
-
+  - serverless-offline
+  - serverless-dynamodb-local
 package:
   individually: true
 
@@ -21,6 +21,19 @@ custom:
         version: v.1.0.0
         title: Todo API
         description: Serverless application for todo management
+  serverless-offline:
+    httpPort: 3003
+  dynamodb:
+    # Skipping start: DynamoDB Local is not available for stage: dev
+    # We need to whitelist the stage, so that dynamodb is started locally.
+    stages:
+      - dev  # whitelist dev-stage
+      # ${self:provider.stage}  # whitelists all stages
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+
 
 provider:
   name: aws

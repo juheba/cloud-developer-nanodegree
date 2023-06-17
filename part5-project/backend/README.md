@@ -1,43 +1,66 @@
-<!--
-title: TODO
-description: This example shows your how to create a TypeScript powered REST API with DynamoDB.
-layout: Doc
-framework: v1
-platform: AWS
-language: nodeJS
-priority: 10
-authorLink: 'https://github.com/QuantumInformation'
-authorName: Nikos
-authorAvatar: 'https://avatars0.githubusercontent.com/u/216566?v=4&s=140'
--->
+# Quickstart
 
-# Introduction
+## Backend
 
-TypeScript (ts) offers type safety which is helpful when working with the AWS SDK, which comes with ts definitions (d.ts)
+Requirements: 
+* Node version > 18 - check via `node -v`
+* Typescript version > 5 - check via `tsc -v`
+* Serverless version > 3 - check via `sls -v`
 
-# compiling
+```sh
+npm i                 # classic install
+sls dynamodb install  # installs dynamodb local
+```
+### 🟢 ONLINE
+```sh
+sls deploy    # deploy serverless template to aws
+sls remove    # remove infrastructure and cloudformation template from aws
+```
+Attention! sls remove - Check if all created resources are deleted:
+* GatewayResponseDefault4XX: 'AWS::ApiGateway::GatewayResponse'
+* TodosTable: 'AWS::DynamoDB::Table'
+* AttatchmentsBucket: 'AWS::S3::Bucket'
+* BucketPolicy: 'AWS::S3::BucketPolicy'
+* Lambda Functions
 
-You can compile the ts files in this directory by 1st installing typescript via
+### 🔴 OFFLINE
+Execute both commands in seperate terminals:
+```sh
+sls offline  # local deployment hosted on http://localhost:3003
+sls dynamodb start  # start dynamodb hosted on http://localhost:8000
+```
 
-`npm install -g typescript`
 
-then
+## Frontend
 
-`npm i`
+Requirements: 
+* TODO:
 
-You can then run the compiler by running `tsc` in this directory. It will pull the settings from .tsconfig and extra @types
-from package.json. The output create.js file is what will be uploaded by serverless.
+```sh
+# set base url in config.ts
+npm run start  # hosts on http://localhost:3000/
+```
 
-For brevity, I have just demonstrated this to match with the todos/create.js, todos/list.js, todos/get.js and todos/update.js lambda function
+# How to interact with dynamodb without dynamodbs shell
+```sh
+aws dynamodb help                                              # Help
+aws dynamodb list-tables --endpoint-url http://localhost:8000  # List all tables
+aws dynamodb describe-table --endpoint-url http://localhost:8000 --table-name todos-dev  # Describe a table by name (with item count)
+```
 
-## Usage
 
-You can create, retrieve, update, or delete todos with the following commands:
 
-### Create a Todo
+# Usage
+
+You can create, retrieve, update, or delete todos with the following commands.
+
+* Replace <api-id> with the generated api id listed in your terminal after executing `sls deploy`.
+* If `sls offline` is running, then you need to replace the host with `http://localhost:3003`
+
+## Create a Todo
 
 ```bash
-curl -X POST https://XXXXXXX.execute-api.us-east-1.amazonaws.com/dev/todos --data '{ "text": "Learn Serverless" }'
+curl -X POST https://<api-id>.execute-api.eu-central-1.amazonaws.com/dev/todos --data '{ "text": "Learn Serverless" }'
 ```
 
 Example Result:
@@ -45,10 +68,10 @@ Example Result:
 {"text":"Learn Serverless","id":"ee6490d0-aa11e6-9ede-afdfa051af86","createdAt":1479138570824,"checked":false,"updatedAt":1479138570824}%
 ```
 
-### List all Todos
+## List all Todos
 
 ```bash
-curl https://XXXXXXX.execute-api.us-east-1.amazonaws.com/dev/todos
+curl https://<api-id>.execute-api.eu-central-1.amazonaws.com/dev/todos
 ```
 
 Example output:
@@ -56,11 +79,11 @@ Example output:
 [{"text":"Deploy my first service","id":"ac90feaa11e6-9ede-afdfa051af86","checked":true,"updatedAt":1479139961304},{"text":"Learn Serverless","id":"206793aa11e6-9ede-afdfa051af86","createdAt":1479139943241,"checked":false,"updatedAt":1479139943241}]%
 ```
 
-### Get one Todo
+## Get one Todo
 
 ```bash
-# Replace the <id> part with a real id from your todos table
-curl https://XXXXXXX.execute-api.us-east-1.amazonaws.com/dev/todos/<id>
+# Replace the <todosId> part with a real id from your todos table
+curl https://<api-id>.execute-api.eu-central-1.amazonaws.com/dev/todos/<todosId>
 ```
 
 Example Result:
@@ -68,11 +91,11 @@ Example Result:
 {"text":"Learn Serverless","id":"ee6490d0-aa11e6-9ede-afdfa051af86","createdAt":1479138570824,"checked":false,"updatedAt":1479138570824}%
 ```
 
-### Update a Todo
+## Update a Todo
 
 ```bash
-# Replace the <id> part with a real id from your todos table
-curl -X PUT https://XXXXXXX.execute-api.us-east-1.amazonaws.com/dev/todos/<id> --data '{ "text": "Learn Serverless", "checked": true }'
+# Replace the <todosId> part with a real id from your todos table
+curl -X PATCH https://<api-id>.execute-api.eu-central-1.amazonaws.com/dev/todos/<todosId> --data '{ "text": "Learn Serverless", "checked": true }'
 ```
 
 Example Result:
