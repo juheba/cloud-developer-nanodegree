@@ -101,17 +101,20 @@ export class TodoAccess {
     return todo
   }
 
-  async updateTodo(newTodo) {
-    logger.info({message: 'Updating a todo', todoId: newTodo.todoId})
+  async updateTodo(userId: string, updatedTodo) {
+    logger.info({message: 'Updating a todo', todoId: updatedTodo.todoId})
 
     var params = {
       TableName : this.todosTable,
-      Key: newTodo.todoId,
-      UpdateExpression: "SET name = :name",
+      Key: {
+        userId,
+        updatedTodo
+      },
+      UpdateExpression: "SET name = :name, dueDate = :dueDate, done = :done",
       ExpressionAttributeValues: {
-        ":name": {"S": newTodo.name},
-        ":dueDate": {"S": newTodo.dueDate},
-        ":done": {"S": newTodo.done},
+        ":name": {"S": updatedTodo.name},
+        ":dueDate": {"S": updatedTodo.dueDate},
+        ":done": {"S": updatedTodo.done},
       },
       ReturnValues: "ALL_NEW"
     };
@@ -120,39 +123,39 @@ export class TodoAccess {
     //return updateTodo
   }
 
-  async deleteTodo(todoId: string): Promise<Boolean> {
+  async deleteTodo(userId: string, todoId: string): Promise<Boolean> {
     logger.info({message: 'Delete todo', todoId: todoId})
+ 
     const params = {
       TableName: this.todosTable,
       Key: {
-        id: todoId
+        userId,
+        todoId
       },
-      ReturnValues: "ALL_NEW"
+      ConditionExpression: "attribute_exists(userId) AND attribute_exists(todoId)",
+      ReturnValues: "ALL_OLD"
     }
 
-    const result = await this.docClient.delete(params).promise()
-
-    if (!result.Attributes) {
-      return false
-    }
-
-    return true
+    const result = await this.docClient.delete(params).promise();
+    return !!result.Attributes;
   }
 
   /**
    * Validates if a todo exists.
    *
+   * @param userId  Id of a user
    * @param todoId  Id of a todo
    * @returns  true if todo exists
    * @throws Error if todo does not exist
    */
-  async validateTodoExists(todoId: string): Promise<Boolean> {
+  async validateTodoExists(userId: string, todoId: string): Promise<Boolean> {
     logger.info({message: 'Validate todo exists', todoId: todoId})
     const getParams = {
       TableName: this.todosTable,
       Key: {
-        id: todoId
-      }
+        userId,
+        todoId
+      },
     }
 
     const result = await this.docClient.get(getParams).promise()

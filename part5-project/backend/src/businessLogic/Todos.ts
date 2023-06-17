@@ -23,10 +23,7 @@ export async function getTodosForUser(userId: string, getTodosRequest: GetTodosR
   return await todoAccess.getTodosForUser(userId, getTodosRequest.limit, getTodosRequest.nextKey)
 }
 
-export async function createTodo(
-  userId: string,
-  createTodoRequest: CreateTodoRequest,
-): Promise <TodoItem> {
+export async function createTodo(userId: string, createTodoRequest: CreateTodoRequest,): Promise <TodoItem> {
   const todoId = uuidv4()
   const todo: TodoItem = {
     userId,
@@ -45,21 +42,18 @@ export async function createAttachmentPresignedUrl(todoId: string) {
   return undefined
 }
 
-export async function updateTodo(
-  todoId: string,
-  updateTodoRequest: UpdateTodoRequest
-): Promise <TodoItem> {
+export async function updateTodo(userId: string, todoId: string, updateTodoRequest: UpdateTodoRequest): Promise <TodoItem> {
   const todo = {
     todoId: todoId,
     name: updateTodoRequest.name,
     dueDate: updateTodoRequest.dueDate,
     done: updateTodoRequest.done
   }
-  return await todoAccess.updateTodo(todo)
+  return await todoAccess.updateTodo(userId, todo)
 }
 
-export async function deleteTodo(todoId: string): Promise<Boolean> {
-  return await todoAccess.deleteTodo(todoId)
+export async function deleteTodo(userId: string, todoId: string): Promise<Boolean> {
+  return await todoAccess.deleteTodo(userId, todoId)
 }
 
 /**
@@ -69,6 +63,6 @@ export async function deleteTodo(todoId: string): Promise<Boolean> {
  * @returns  true if todo exists
  * @throws Error if todo does not exist
  */
-export async function validateTodoExists(todoId: string): Promise<Boolean> {
-  return await todoAccess.validateTodoExists(todoId)
+export async function validateTodoExists(userId: string, todoId: string): Promise<Boolean> {
+  return await todoAccess.validateTodoExists(userId, todoId)
 }

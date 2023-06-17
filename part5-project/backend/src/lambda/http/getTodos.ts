@@ -8,7 +8,7 @@ import { createLogger, middyfy, getUserId } from '@utils'
 const logger = createLogger('getTodos')
 
 // Get all TODO items for a current user
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info(`Processing event: ${event}`)
 
   let userId = '1234';  //getUserId(event);  // TODO:
