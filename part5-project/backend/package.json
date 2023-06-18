@@ -1,5 +1,5 @@
 {
-  "name": "typescript-example",
+  "name": "serverless-todo-app",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -13,7 +13,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.119",
-    "@types/aws-sdk": "0.0.42",
+    "@types/aws-sdk": "^0.0.42",
     "@types/node": "^7.0.5",
     "dynamodb-localhost": "https://github.com/99x/dynamodb-localhost#db30898f8c40932c7177be7b2f1a81360d12876d",
     "jsonwebtoken": "^9.0.0",
@@ -43,7 +43,7 @@
     "@middy/http-cors": "^4.5.2",
     "@middy/http-error-handler": "^4.5.2",
     "@middy/http-json-body-parser": "^4.5.2",
-    "aws-sdk": "^2.1397.0",
+    "aws-sdk": "^2.1399.0",
     "aws-xray-sdk": "^3.5.0",
     "uuid": "^3.4.0",
     "winston": "^3.9.0"

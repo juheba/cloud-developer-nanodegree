@@ -5,15 +5,17 @@ import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } f
 import { getTodosForUser } from '@businessLogic/Todos';
 import { createLogger, middyfy, getUserId } from '@utils'
 
+import { DynamoDB } from "aws-sdk";
+
 const logger = createLogger('getTodos')
 
 // Get all TODO items for a current user
 const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info(`Processing event: ${event}`)
 
-  let userId = '1234';  //getUserId(event);  // TODO:
+  let userId = getUserId(event);
   let limit: number;
-  let nextKey: AWS.DynamoDB.Key;
+  let nextKey: DynamoDB.Key;
 
   try {
     limit = parseLimitParameter(event)      // Maximum number of elements to return

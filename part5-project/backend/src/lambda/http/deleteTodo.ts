@@ -11,7 +11,7 @@ const logger = createLogger('deleteTodos')
 const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info(`Processing event: ${event}`)
 
-  let userId = '1234';  //getUserId(event);  // TODO:
+  let userId = getUserId(event);
   let todoId: string;
 
   try {
@@ -25,7 +25,7 @@ const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Pro
     result = await deleteTodo(userId, todoId)
   } catch (error) {
     if (error.code === 'ConditionalCheckFailedException') {
-      logger.info({message: 'No item found with the provided todoId', todoId: todoId})
+      logger.info({message: 'No item found with the provided todoId', todoId: todoId, userId: userId})
       return createNotFoundResponse(`No item found with the provided todoId: ${todoId}`)
     }
     // Re-throw the error if it wasn't a conditional check failure

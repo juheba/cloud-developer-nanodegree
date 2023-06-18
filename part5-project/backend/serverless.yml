@@ -11,6 +11,7 @@ plugins:
   - serverless-aws-documentation
   - serverless-offline
   - serverless-dynamodb-local
+
 package:
   individually: true
 
@@ -18,7 +19,7 @@ custom:
   documentation:
     api:
       info:
-        version: v.1.0.0
+        version: v.0.0.0
         title: Todo API
         description: Serverless application for todo management
   serverless-offline:
@@ -26,13 +27,13 @@ custom:
   dynamodb:
     # Skipping start: DynamoDB Local is not available for stage: dev
     # We need to whitelist the stage, so that dynamodb is started locally.
-    stages:
-      - dev  # whitelist dev-stage
-      # ${self:provider.stage}  # whitelists all stages
     start:
       port: 8000
       inMemory: true
       migrate: true
+    stages:
+      - dev  # whitelist dev-stage
+      # ${self:provider.stage}  # whitelists all stages
 
 
 provider:
@@ -58,10 +59,7 @@ provider:
     ATTACHMENTS_S3_BUCKET: juheba-todo-attachments-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-    NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000
-    ### TEMPLATE START ###
-    DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
-    ### TEMPLATE END ###
+    NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000 # --trace-warnings --max-old-space-size=4096
 
   logs:
     # Enable API Gateway logs
@@ -75,22 +73,16 @@ provider:
             - xray:PutTelemetryRecords
             - xray:PutTraceSegments
           Resource: "*"
-      ## TEMPLATE START ##
-        - Effect: Allow
-          Action:
-            - dynamodb:Query
-            - dynamodb:Scan
-            - dynamodb:GetItem
-            - dynamodb:PutItem
-            - dynamodb:UpdateItem
-            - dynamodb:DeleteItem
-          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
-      ## TEMPLATE END ##
 
 functions:
 
-#  Auth:
-#    handler: src/lambda/auth/auth0Authorizer.handler
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.main
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - lambda:InvokeFunction
+        Resource: "*"
 
   # Configure this function - 
   # Provide iamRoleStatements property for performing Actions on DynamoDB
@@ -101,12 +93,14 @@ functions:
           method: get
           path: todos
           cors: true
-#          authorizer: Auth
+          authorizer: Auth
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
-          - 'dynamodb:Query'
-          - 'dynamodb:GetItem'
+          - dynamodb:Query
+          - dynamodb:GetItem
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
         Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}'
 
   # Configure this function - 
@@ -120,7 +114,7 @@ functions:
           method: post
           path: todos
           cors: true
-#          authorizer: Auth
+          authorizer: Auth
 #          request:
 #            schemas:
 #              application/json: ${file(./schemas/create-todo-model.json)}
@@ -158,7 +152,7 @@ functions:
           method: delete
           path: todos/{todoId}
           cors: true
-#          authorizer: Auth
+          authorizer: Auth
     iamRoleStatements:
       - Effect: 'Allow'
         Action:
@@ -182,73 +176,21 @@ functions:
 #          - 'dynamodb:DeleteItem'
 #        Resource: 'arn:aws:dynamodb${self:provider.region}:*:table/${self:provider.environment.ATTACHMENTS_S3_BUCKET}'
 
-  ## TEMPLATE START ##
-
-#  create:
-#    handler: src/lambda/template/create.create
-#    events:
-#      - http:
-#          path: todos
-#          method: post
-#          cors: true
-
-#  list:
-#    handler: src/lambda/template/list.list
-#    events:
-#      - http:
-#          path: todos
-#          method: get
-#          cors: true
-
-#  get:
-#    handler: src/lambda/template/get.get
-#    events:
-#      - http:
-#          path: todos/{id}
-#          method: get
-#          cors: true
-        
-#  update:
-#    handler: src/lambda/template/update.update
-#    events:
-#      - http:
-#          path: todos/{id}
-#          method: put
-#          cors: true
-
-  ## TEMPLATE END ##
-
 resources:
   Resources:
-
-    TodosDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
 
     # Add necessary AWS resources. You will need at least the following AWS resources
     # Fill the properties
     # Feel free to change the names as you like.
-#    GatewayResponseDefault4XX:
-#      Type: AWS::ApiGateway::GatewayResponse
-#      Properties:
-#        ResponseParameters:
-#          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-#          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization'"
-#          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST'"
-#        ResponseType: DEFAULT_4XX
-#        RestApiId: !Ref ApiGatewayRestApi
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,DELETE,PATCH,PUT'"
+        ResponseType: DEFAULT_4XX
+        RestApiId: !Ref ApiGatewayRestApi
 #    GatewayResponse401:
 #      Type: AWS::ApiGateway::GatewayResponse
 #      Properties:

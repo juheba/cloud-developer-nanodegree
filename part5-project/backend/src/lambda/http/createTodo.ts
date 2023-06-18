@@ -11,7 +11,7 @@ const logger = createLogger('createTodos')
 const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info(`Processing event: ${event}`)
 
-  let userId = '1234';  //getUserId(event);  // TODO:
+  let userId = getUserId(event);
   var newTodo: CreateTodoRequest;
 
   try {
