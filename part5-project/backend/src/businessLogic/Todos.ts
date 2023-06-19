@@ -6,7 +6,6 @@ import { TodoAccess } from '../dataLayer/todoAccess'
 import { GetTodosRequest } from '../requests/GetTodosRequest'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
-import { parseUserId } from '../auth/utils'
 
 import { createLogger} from '@utils'
 
@@ -34,7 +33,7 @@ export async function createTodo(userId: string, createTodoRequest: CreateTodoRe
     done: false,
     //attachmentUrl: attatchmentsAccess.getAttatchmentUrl(todoId)
   }
-  return await todoAccess.createTodo(todo)
+  return await todoAccess.createTodo(userId, todo)
 }
 
 export async function createAttachmentPresignedUrl(todoId: string) {

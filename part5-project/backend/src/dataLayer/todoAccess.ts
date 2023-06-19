@@ -70,8 +70,8 @@ export class TodoAccess {
     }
   }
 
-  async getTodosById(todoId: string): Promise<TodoItem> {
-    logger.info({message: 'Getting a todo by id', todoId: todoId})
+  async getTodosById(userId: string, todoId: string): Promise<TodoItem> {
+    logger.info({message: 'Getting a todo by id', todoId: todoId, userId: userId})
 
     const queryParams = {
       TableName: this.todosTable,
@@ -90,8 +90,8 @@ export class TodoAccess {
     return result.Items[0] as TodoItem
   }
 
-  async createTodo(todo: TodoItem) {
-    logger.info({message: 'Creating a todo', todoId: todo.todoId})
+  async createTodo(userId: string, todo: TodoItem) {
+    logger.info({message: 'Creating a todo', todoId: todo.todoId, userId: userId})
 
     var params = {
       TableName : this.todosTable,
@@ -102,29 +102,31 @@ export class TodoAccess {
   }
 
   async updateTodo(userId: string, updatedTodo) {
-    logger.info({message: 'Updating a todo', todoId: updatedTodo.todoId})
+    logger.info({message: 'Updating a todo', todoId: updatedTodo.todoId, userId: userId})
 
     var params = {
       TableName : this.todosTable,
       Key: {
         userId,
-        updatedTodo
+        todoId: updatedTodo.todoId
       },
-      UpdateExpression: "SET name = :name, dueDate = :dueDate, done = :done",
+      UpdateExpression: "SET #n = :name, dueDate = :dueDate, done = :done",
       ExpressionAttributeValues: {
-        ":name": {"S": updatedTodo.name},
-        ":dueDate": {"S": updatedTodo.dueDate},
-        ":done": {"S": updatedTodo.done},
+        ":name": updatedTodo.name,
+        ":dueDate": updatedTodo.dueDate,
+        ":done": updatedTodo.done,
+      },
+      ExpressionAttributeNames: {  // Because name is a reserved keyword
+        "#n": "name"
       },
       ReturnValues: "ALL_NEW"
     };
     const result = await this.docClient.update(params).promise()
-    return result.Attributes[0] as TodoItem
-    //return updateTodo
+    return result.Attributes as TodoItem
   }
 
   async deleteTodo(userId: string, todoId: string): Promise<Boolean> {
-    logger.info({message: 'Delete todo', todoId: todoId})
+    logger.info({message: 'Delete todo', todoId: todoId, userId: userId})
  
     const params = {
       TableName: this.todosTable,
@@ -149,7 +151,7 @@ export class TodoAccess {
    * @throws Error if todo does not exist
    */
   async validateTodoExists(userId: string, todoId: string): Promise<Boolean> {
-    logger.info({message: 'Validate todo exists', todoId: todoId})
+    logger.info({message: 'Validate todo exists', todoId: todoId, userId: userId})
     const getParams = {
       TableName: this.todosTable,
       Key: {
