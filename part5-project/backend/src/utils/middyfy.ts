@@ -14,5 +14,6 @@ export const middyfy = (handler) => {
     // for debugging purpose
     /*.after((handlerContext) => {
       console.log("Response after middleware:", handlerContext.response);
+      console.log("Context after middleware:", handlerContext.context);
     });*/
 }
