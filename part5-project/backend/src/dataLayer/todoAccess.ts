@@ -101,7 +101,7 @@ export class TodoAccess {
     return todo
   }
 
-  async updateTodo(userId: string, updatedTodo) {
+  async updateTodo(userId: string, updatedTodo): Promise<TodoItem> {
     logger.info({message: 'Updating a todo', todoId: updatedTodo.todoId, userId: userId})
 
     var params = {
@@ -118,6 +118,27 @@ export class TodoAccess {
       },
       ExpressionAttributeNames: {  // Because name is a reserved keyword
         "#n": "name"
+      },
+      ConditionExpression: "attribute_exists(userId) AND attribute_exists(todoId)",
+      ReturnValues: "ALL_NEW"
+    };
+    const result = await this.docClient.update(params).promise()
+    return result.Attributes as TodoItem
+  }
+
+  async updateAttachmentUrl(userId: string, todoId: string, url: string): Promise<TodoItem> {
+
+    logger.info({message: 'Updating a todos attachment', todoId: todoId, userId: userId})
+
+    var params = {
+      TableName : this.todosTable,
+      Key: {
+        userId,
+        todoId
+      },
+      UpdateExpression: "SET attachmentUrl = :url",
+      ExpressionAttributeValues: {
+        ":url": url,
       },
       ReturnValues: "ALL_NEW"
     };

@@ -2,17 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { TodoItem } from '../models/TodoItem'
 import { TodosWithLastKey } from "../models/TodosWithLastKey";
 import { TodoAccess } from '../dataLayer/todoAccess'
-//import { AttatchmentsAccess } from '../dataLayer/attatchmentsAccess'
+import { AttachmentsAccess } from '../dataLayer/attachmentsAccess'
 import { GetTodosRequest } from '../requests/GetTodosRequest'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 
-import { createLogger} from '@utils'
-
-const logger = createLogger('BusinessLayer/Todos')
-
 const todoAccess = new TodoAccess()
-//const attatchmentsAccess = new AttatchmentsAccess()
+const attachmentsAccess = new AttachmentsAccess()
 
 export async function getAllTodos(getTodosRequest: GetTodosRequest): Promise<TodosWithLastKey> {
   return await todoAccess.getAllTodos(getTodosRequest.limit, getTodosRequest.nextKey)
@@ -30,15 +26,18 @@ export async function createTodo(userId: string, createTodoRequest: CreateTodoRe
     createdAt: new Date().toISOString(),
     name: createTodoRequest.name,
     dueDate: createTodoRequest.dueDate,
-    done: false,
-    //attachmentUrl: attatchmentsAccess.getAttatchmentUrl(todoId)
+    done: false
   }
   return await todoAccess.createTodo(userId, todo)
 }
 
-export async function createAttachmentPresignedUrl(todoId: string) {
-  //return await attatchmentsAccess.getUploadUrl(todoId)
-  return undefined
+export async function createAttachmentPresignedUrl(userId: string, todoId: string) {
+  const attachmentId = uuidv4()
+
+  let attachmentUrl = attachmentsAccess.getAttachmentUrl(attachmentId)
+  todoAccess.updateAttachmentUrl(userId, todoId, attachmentUrl)
+
+  return attachmentsAccess.getUploadUrl(attachmentId)
 }
 
 export async function updateTodo(userId: string, todoId: string, updateTodoRequest: UpdateTodoRequest): Promise <TodoItem> {
