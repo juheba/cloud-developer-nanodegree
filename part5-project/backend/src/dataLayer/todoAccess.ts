@@ -30,21 +30,6 @@ export class TodoAccess {
     private readonly todosTable = process.env.TODOS_TABLE) {
   }
 
-  async getAllTodos(limit: number, nextKey: AWS.DynamoDB.Key): Promise<TodosWithLastKey> {
-    logger.info('Getting all todos')
-
-    const scanParams = {
-      TableName: this.todosTable,
-      Limit: limit,
-      ExclusiveStartKey: nextKey
-    }
-    const result = await this.docClient.scan(scanParams).promise()
-    return {
-      todos: result.Items as TodoItem[],
-      lastKey: result.LastEvaluatedKey
-    }
-  }
-
   async getTodosForUser(userId: string, limit: number, nextKey: AWS.DynamoDB.Key): Promise<TodosWithLastKey> {
     logger.info({message: 'Getting todos by user', userId: userId})
 

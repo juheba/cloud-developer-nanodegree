@@ -10,10 +10,6 @@ import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 const todoAccess = new TodoAccess()
 const attachmentsAccess = new AttachmentsAccess()
 
-export async function getAllTodos(getTodosRequest: GetTodosRequest): Promise<TodosWithLastKey> {
-  return await todoAccess.getAllTodos(getTodosRequest.limit, getTodosRequest.nextKey)
-}
-
 export async function getTodosForUser(userId: string, getTodosRequest: GetTodosRequest): Promise<TodosWithLastKey> {
   return await todoAccess.getTodosForUser(userId, getTodosRequest.limit, getTodosRequest.nextKey)
 }
