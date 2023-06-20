@@ -102,7 +102,7 @@
 					"script": {
 						"exec": [
 							"const responseJson = pm.response.json();\r",
-							"pm.environment.set(\"temp_todoId\", responseJson.newItem.todoId);"
+							"pm.environment.set(\"temp_todoId\", responseJson.item.todoId);"
 						],
 						"type": "text/javascript"
 					}

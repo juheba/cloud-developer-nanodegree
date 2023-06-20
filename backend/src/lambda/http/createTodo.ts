@@ -24,7 +24,7 @@ const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Pro
   return {
       statusCode: 201,
       body: JSON.stringify({
-          newItem
+          item: newItem
       })
   }
 };
