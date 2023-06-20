@@ -1,0 +1,198 @@
+{
+	"info": {
+		"_postman_id": "f7bb0e53-8bcc-41a7-98e2-1416605eb0c0",
+		"name": "cloud-cdnd-c2-final",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Valid Token /api/v0/user/auth/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"body includes an email and token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.auth).to.eql(true);",
+							"    pm.expect(jsonData.user).to.not.eql(null);",
+							"    pm.expect(jsonData.token).to.not.eql(null)",
+							"    ",
+							"    pm.environment.set(\"TOKEN\", jsonData.token);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\":\"hello@gmail.com\",\n\t\"password\":\"hello\"\n}"
+				},
+				"url": {
+					"raw": "{{UDAGRAM_HOST}}/api/v0/users/auth/login",
+					"host": [
+						"{{UDAGRAM_HOST}}"
+					],
+					"path": [
+						"api",
+						"v0",
+						"users",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Udagram /api/v0/feed/:id/filtered",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"A single item is returned\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.not.eql(null);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{UDAGRAM_HOST}}/api/v0/feed/:id/filtered",
+					"host": [
+						"{{UDAGRAM_HOST}}"
+					],
+					"path": [
+						"api",
+						"v0",
+						"feed",
+						":id",
+						"filtered"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				},
+				"description": "Request a specific feed item detail"
+			},
+			"response": []
+		},
+		{
+			"name": "Filter /filteredimage?image_url=http://www.sebulli.com/Testbildgenerator/testbild.gif",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{FILTER_HOST}}/filteredimage?image_url=http://www.sebulli.com/Testbildgenerator/testbild.gif",
+					"host": [
+						"{{FILTER_HOST}}"
+					],
+					"path": [
+						"filteredimage"
+					],
+					"query": [
+						{
+							"key": "image_url",
+							"value": "http://www.sebulli.com/Testbildgenerator/testbild.gif"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "FILTER_HOST",
+			"value": "http://filter-hebauf-dev.eu-central-1.elasticbeanstalk.com"
+		},
+		{
+			"key": "UDAGRAM_HOST",
+			"value": "http://udagram-hebauf-dev.eu-central-1.elasticbeanstalk.com"
+		},
+		{
+			"key": "FILTER_LOCAL",
+			"value": "http://localhost:8082"
+		},
+		{
+			"key": "UDAGRAM_LOCAL",
+			"value": "http://localhost:8080"
+		}
+	]
+}
