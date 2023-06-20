@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-node
+  labels:
+    app: simple-node
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: simple-node
+  template:
+    metadata:
+      labels:
+        app: simple-node
+    spec:
+      containers:
+      - name: simple-node
+        image: juheba/simple-node
+        ports:
+        - containerPort: 80
