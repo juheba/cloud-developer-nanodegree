@@ -30,10 +30,10 @@ export async function createTodo(userId: string, createTodoRequest: CreateTodoRe
 export async function createAttachmentPresignedUrl(userId: string, todoId: string) {
   const attachmentId = uuidv4()
 
-  let attachmentUrl = attachmentsAccess.getAttachmentUrl(attachmentId)
-  todoAccess.updateAttachmentUrl(userId, todoId, attachmentUrl)
+  const attachmentUrl = attachmentsAccess.getAttachmentUrl(attachmentId)
+  await todoAccess.updateAttachmentUrl(userId, todoId, attachmentUrl)
 
-  return attachmentsAccess.getUploadUrl(attachmentId)
+  return await attachmentsAccess.getUploadUrl(attachmentId)
 }
 
 export async function updateTodo(userId: string, todoId: string, updateTodoRequest: UpdateTodoRequest): Promise <TodoItem> {

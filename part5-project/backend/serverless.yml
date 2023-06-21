@@ -16,14 +16,14 @@ package:
   individually: true
 
 custom:
+  webpack:
+    concurrency: 10 # desired concurrency, defaults to the number of available cores
   documentation:
     api:
       info:
         version: v.0.0.0
         title: Todo API
         description: Serverless application for todo management
-  webpack:
-    concurrency: 10 # desired concurrency, defaults to the number of available cores
   serverless-offline:
     httpPort: 3003
   dynamodb:
@@ -67,15 +67,6 @@ provider:
     # Enable API Gateway logs
     restApi: true
 
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - xray:PutTelemetryRecords
-            - xray:PutTraceSegments
-          Resource: "*"
-
 functions:
 
   Auth:
@@ -102,7 +93,6 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:Query
-          - dynamodb:GetItem
           - xray:PutTelemetryRecords
           - xray:PutTraceSegments
         Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}'
@@ -168,7 +158,6 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
-          - dynamodb:GetItem
           - xray:PutTelemetryRecords
           - xray:PutTraceSegments
         Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}'
@@ -191,7 +180,6 @@ functions:
         Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENTS_S3_BUCKET}/*
       - Effect: Allow
         Action:
-          - dynamodb:GetItem
           - dynamodb:UpdateItem
           - xray:PutTelemetryRecords
           - xray:PutTraceSegments
@@ -199,6 +187,19 @@ functions:
 
 resources:
   Resources:
+
+    # Possible ResponseTypes: https://docs.aws.amazon.com/apigateway/latest/developerguide/supported-gateway-response-types.html
+    GatewayResponsesBadRequestBody:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,DELETE,PATCH'"
+        ResponseType: BAD_REQUEST_BODY
+        RestApiId: !Ref ApiGatewayRestApi
+        ResponseTemplates:
+          application/json: "{'statusCode': 400, errorCode:'API400', 'message': 'Bad request parameter', 'details': '$context.error.validationErrorString'}"
 
     # Add necessary AWS resources. You will need at least the following AWS resources
     # Fill the properties
