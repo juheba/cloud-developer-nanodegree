@@ -20,7 +20,7 @@
     <td><a href="./part4-monolith-to-microservices/">P4 - Monolith to Microservices at Scale</a></td>
   </tr>
   <tr>
-    <td>👷🏽‍♀️</td>
+    <td>✅</td>
     <td><a href="./part5-l6-exercise-best-practices/">P5 - Develop & Deploy Serverless App</a></td>
   </tr>
   <tr>
