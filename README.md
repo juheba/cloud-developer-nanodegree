@@ -21,7 +21,7 @@
   </tr>
   <tr>
     <td>✅</td>
-    <td><a href="./part5-l6-exercise-best-practices/">P5 - Develop & Deploy Serverless App</a></td>
+    <td><a href="./part5-serverless-application/">P5 - Develop & Deploy Serverless App</a></td>
   </tr>
   <tr>
     <td>👷🏽‍♀️</td>
