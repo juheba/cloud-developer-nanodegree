@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3126cee9-8fe2-4a6a-8f46-ed1523cddbe4",
+		"_postman_id": "de0c2c29-6321-435e-b4c4-ac0f348f4429",
 		"name": "serverless-todo-app",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -166,47 +166,6 @@
 			"response": []
 		},
 		{
-			"name": "Delete todo",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{BASE_URL}}/{{STAGE}}/todos/{{temp_todoId}}",
-					"host": [
-						"{{BASE_URL}}"
-					],
-					"path": [
-						"{{STAGE}}",
-						"todos",
-						"{{temp_todoId}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Get attachment URL",
 			"event": [
 				{
@@ -253,13 +212,54 @@
 				"body": {
 					"mode": "file",
 					"file": {
-						"src": "/C:/Users/Julia/Git/juheba-github/cloud-dev-nd-part5/part5-l6-exercise-best-practices/mock/LeoTheFluffyCat.jpg"
+						"src": "/C:/Users/Julia/Git/juheba-github/cloud-developer-nanodegree/part5-serverless-application/part5-project/postman/myoctocat.com_build-your-octocat.png"
 					}
 				},
 				"url": {
 					"raw": "{{temp_uploadUrl}}",
 					"host": [
 						"{{temp_uploadUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete todo",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/{{STAGE}}/todos/{{temp_todoId}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"{{STAGE}}",
+						"todos",
+						"{{temp_todoId}}"
 					]
 				}
 			},
