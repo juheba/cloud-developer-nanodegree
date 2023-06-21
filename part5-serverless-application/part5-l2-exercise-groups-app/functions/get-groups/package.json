@@ -1,0 +1,21 @@
+{
+    "name": "get-groups",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "package": "zip -r get-groups.zip .",
+        "prod": "npm i --production && npm run package",
+        "ship-it": "aws lambda update-function-code --function-name get-groups --zip-file fileb://get-groups.zip",
+        "clean": "rm get-groups.zip",
+        "fresh-start": "rm -I -d -r node_modules package-lock.json get-groups.zip",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "aws-sdk": "^2.492.0"
+    }
+}
