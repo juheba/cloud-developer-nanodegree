@@ -1,7 +1,11 @@
 {
   "name": "serverless-todo-app",
   "version": "0.0.0",
-  "description": "",
+  "description": "Serverless Todo API",
+  "engines" : { 
+    "npm" : ">=9.5.1",
+    "node" : ">=18.16.0"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +13,7 @@
     "lint": "tslint '*.ts'"
   },
   "keywords": [],
-  "author": "",
+  "author": "Julia",
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.119",

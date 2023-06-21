@@ -1,7 +1,12 @@
 {
-  "name": "typescript-app",
-  "version": "0.1.0",
+  "name": "todo-ui",
+  "version": "1.0.0",
+  "description": "Todo UI: Interacts with the serverless todo api",
   "private": true,
+  "engines": {
+    "npm": ">=6.14.12",
+    "node": ">=12.22.1"
+  },
   "dependencies": {
     "axios": "^0.21.4",
     "dateformat": "^3.0.3",
