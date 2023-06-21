@@ -19,16 +19,22 @@ const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResu
     return createBadRequestResponse(e.message)
   }
 
-  if (!await validateTodoExists(userId, todoId)) {
-    return createNotFoundResponse(`Todo with \'todoId\' ${todoId} does not exist.`)
+  let result;
+  try {
+    result = await createAttachmentPresignedUrl(userId, todoId)
+  } catch (error) {
+    if (error.code === 'ConditionalCheckFailedException') {
+      logger.info({message: 'No item found with the provided todoId', todoId: todoId, userId: userId})
+      return createNotFoundResponse(`No item found with the provided todoId: ${todoId}`)
+    }
+    throw error;
   }
-
-  // Return a presigned URL to upload a file for a TODO item with the provided id
-  const uploadUrl = {uploadUrl: await createAttachmentPresignedUrl(userId, todoId)}
 
   return {
     statusCode: 201,
-    body: JSON.stringify(uploadUrl)
+    body: JSON.stringify({
+      uploadUrl: result
+    })
   }
 }
 

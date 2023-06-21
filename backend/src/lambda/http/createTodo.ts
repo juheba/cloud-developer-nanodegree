@@ -47,6 +47,11 @@ function parseBody(event) {
   if (parsedBody === undefined || parsedBody === null) {
     throw new Error('body does not exist.')
   }
+
+  // Because "pattern": "^.*\\S.*$" in create-todo-model.json does not work for inputs like this: " \n\tTest"
+  if(parsedBody.name.trim() === '') {
+    throw new Error('name is empty.')
+  }
   return parsedBody
 }
 

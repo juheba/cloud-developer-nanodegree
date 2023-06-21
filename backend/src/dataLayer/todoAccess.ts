@@ -125,6 +125,7 @@ export class TodoAccess {
       ExpressionAttributeValues: {
         ":url": url,
       },
+      ConditionExpression: "attribute_exists(userId) AND attribute_exists(todoId)",
       ReturnValues: "ALL_NEW"
     };
     const result = await this.docClient.update(params).promise()

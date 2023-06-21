@@ -28,18 +28,22 @@ const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Pro
     return createBadRequestResponse(e.message)
   }
 
-  const result = await updateTodo(userId, todoId, updatedTodo)
+  let result;
+  try {
+    result = await updateTodo(userId, todoId, updatedTodo)
+  } catch (error) {
+    if (error.code === 'ConditionalCheckFailedException') {
+      logger.info({message: 'No item found with the provided todoId', todoId: todoId, userId: userId})
+      return createNotFoundResponse(`No item found with the provided todoId: ${todoId}`)
+    }
+    throw error;
+  }
 
   return {
     statusCode: 200,
     body: JSON.stringify(result)
   }
 
-  /*
-  return {
-    statusCode: 200,
-    body: JSON.stringify({"warning": "this is a mocked result!"})
-  }*/
 }
 
 export const main = middyfy(handler);
@@ -106,6 +110,10 @@ function parseBody(event): UpdateTodoRequest {
   var parsedBody = event.body
   if (parsedBody === undefined || parsedBody === null) {
     throw new Error('body does not exist.')
+  }
+  // Because "pattern": "^.*\\S.*$" in update-todo-model.json does not work for inputs like this: " \n\tTest"
+  if(parsedBody.name.trim() === '') {
+    throw new Error('name is empty.')
   }
   return parsedBody as UpdateTodoRequest
 }
