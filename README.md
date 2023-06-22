@@ -9,7 +9,7 @@
   </tr>
   <tr>
     <td>✅</td>
-    <td>P2 - Cloud Fundamentals</td>
+    <td><a href="./part2-cloud-fundamentals">P2 - Cloud Fundamentals</a></td>
   </tr>
   <tr>
     <td>✅</td>
