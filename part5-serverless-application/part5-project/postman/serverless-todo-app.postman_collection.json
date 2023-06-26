@@ -60,7 +60,8 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"if (null === pm.environment.get(\"temp_nextKey\") || undefined === pm.environment.get(\"temp_nextKey\")) {\r",
+							"const currentNextKey = pm.environment.get(\"temp_nextKey\")\r",
+							"if (null === currentNextKey || undefined === currentNextKey || \"\" === currentNextKey) {\r",
 							"    pm.request.removeQueryParams(\"nextKey\")\r",
 							"}"
 						],
